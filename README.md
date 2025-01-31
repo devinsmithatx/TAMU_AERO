@@ -10,10 +10,10 @@ AERO 423 - Orbital Mechanics
 # Graduate Courses
 AERO 622 - Spacecraft Dynamics and Control\
 AERO 625 - Modern Control of Aerospace Systems\
-AERO 632 - Design of Advanced Flight Control Systems (Currently Enrolled)\
+AERO 632 - Design of Advanced Flight Control Systems - __Currently Enrolled__\
 AERO 651 - Human Spaceflight Operations\
-AERO 666 - Aerospace Systems Analysis (Currently Enrolled)\
-AERO 689 - Applied Kalman Filters (Currently Enrolled)\
+AERO 666 - Aerospace Systems Analysis - __Currently Enrolled__\
+AERO 689 - Applied Kalman Filters - __Currently Enrolled__\
 AERO 689 - Applied Machine Learning for Aerospace Systems\
 MEEN 651 - Control System Design
 
