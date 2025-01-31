@@ -2,7 +2,7 @@
 This repository is a collection of coding assignments and projects related to dynamics and control / GNC. This repo is not a comprehensive list of all my courswork coding assingments, however, the majority of my graduate work and a large portion of my undergraduate work have been preserved here. 
 
 # Undergraduate Courses
-AERO 321 - Dynamics of Aerospace Vegicles
+AERO 321 - Dynamics of Aerospace Vehicles\
 AERO 423 - Orbital Mechanics
 
 # Graduate Courses
