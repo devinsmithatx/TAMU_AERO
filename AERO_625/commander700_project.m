@@ -1,6 +1,6 @@
 clc; clear; close all;
 
-% add all the fucntions needed
+% add all the fucntions created for the analysis
 addpath("Functions\Valasek\")
 addpath("Functions\Analysis\")
 addpath("Functions\SDR\")
