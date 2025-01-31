@@ -1,5 +1,5 @@
 # Description
-This repository is a collection of coding assignments and projects **only related to dynamics and control / GNC**. This repo is not a comprehensive list of all my courswork coding assingments, however, the majority of my graduate work and a large portion of my undergraduate work have been preserved here. 
+This repository is a collection of coding assignments and projects **only related to dynamics and control / GNC**. This repo is not a comprehensive list of all my courswork coding assingments, however, the majority of my graduate work and a portion of my undergraduate work have been preserved here. 
 
 # Undergraduate Courses
 AERO 310 - Aerospace Dynamics\
