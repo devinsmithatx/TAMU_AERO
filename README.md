@@ -1,7 +1,7 @@
 # TAMU_AERO
 
 ## Description
-This repository is a collection of coding assignments and projects **only related to dynamics and control / GNC**. This repo is not a comprehensive list of all my courswork coding assingments, however, the majority of my graduate work and a portion of my undergraduate work have been preserved here. 
+This repository is a collection of coding assignments and projects related to dynamics and control / GNC. This repo is not a comprehensive list of all my coursework coding assingments, however, the majority of my graduate work and a portion of my undergraduate work have been preserved here. These assignments contain simulating dynamics, characterizing vehicle performance, orbital mechanics, control law and filter design, and other related work.
 
 ## Undergraduate Courses
 AERO 310 - Aerospace Dynamics\
