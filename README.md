@@ -14,5 +14,6 @@ AERO 632 - Design of Advanced Flight Control Systems\
 AERO 651 - Human Spaceflight Operations\
 AERO 666 - Aerospace Systems Analysis\
 AERO 689 - Applied Kalman Filters\
-AERO 689 - Applied Machine Learning for Aerospace Systems
+AERO 689 - Applied Machine Learning for Aerospace Systems\
+MEEN 651 - Control System Design
 
