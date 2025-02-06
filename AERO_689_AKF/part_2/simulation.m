@@ -1,6 +1,7 @@
 function simulation(inp, dt, plot_data)
 %SIMULATION Simulates the entire falling object problem (part 2)
-%   Detailed explanation goes here
+%   Creates state space model, and simulates the dynamcis + measurements.
+%   Plots the data.
 
 % set default parameters
 if nargin < 2; dt = 0.01;   end
@@ -30,16 +31,26 @@ nu_hist = unique([state_hist.nu]',"rows", "stable")';
 y_hist = unique([state_hist.y]',"rows", "stable")';
 tk_hist = unique([state_hist.tk]', "rows", "stable")';
 
+% plot the stored data
 if plot_data
-    figure; plot(t_hist,r_hist(2,:)); 
-    title("Position"); xlabel("t (s)"); ylabel("r_y (m)");
-    figure; plot(t_hist,v_hist(2,:));
-    title("Velocity"); xlabel("t (s)"); ylabel("v_y (m/s)");
-    figure; plot(t_hist,w_hist(4,:)); 
+    tmin = t_hist(1); tmax = t_hist(end);
+    figure; plot(t_hist,r_hist(2,:)); xlim([tmin, tmax]);
+    title("True Position"); xlabel("t (s)"); ylabel("r_y (m)");
+    figure; plot(t_hist,v_hist(2,:)); xlim([tmin, tmax]);
+    title("True Velocity"); xlabel("t (s)"); ylabel("v_y (m/s)");
+    figure; hold on; xlim([tmin, tmax]);
+    plot(t_hist, t_hist*0, 'k');
+    plot(t_hist, ones(length(t_hist),1)*ss.Qk1(4,4), '--k');
+    plot(t_hist, -ones(length(t_hist),1)*ss.Qk1(4,4), '--k');
+    plot(t_hist,w_hist(4,:)); hold off;
     title("Process Noise"); xlabel("t (s)"); ylabel("w (m/s^2)");
-    figure; plot(tk_hist,y_hist, 'x');
-    title("Range"); xlabel("t (s)"); ylabel("y (m)");
-    figure; plot(tk_hist,nu_hist, 'x'); 
+    figure; plot(tk_hist,y_hist, 'x'); xlim([tmin, tmax]);
+    title("Range Measurements"); xlabel("t (s)"); ylabel("y (m)");
+    figure; hold on; xlim([tmin, tmax]);
+    plot(t_hist, t_hist*0, 'k');
+    plot(t_hist, ones(length(t_hist),1)*sqrt(inp.R), '--k');
+    plot(t_hist, -ones(length(t_hist),1)*sqrt(inp.R), '--k');
+    plot(tk_hist,nu_hist, 'x'); hold off;
     title("Measurement Noise"); xlabel("t (s)"); ylabel("nu (m)");
 end
 end

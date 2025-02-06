@@ -1,6 +1,6 @@
 function state = dynamics(dt, state, ss)
-%DYNAMICS Summary of this function goes here
-%   Detailed explanation goes here
+%DYNAMICS Simulates the dynamics
+%   x_k1 = phi*xk + uk1 + wk1
 
 x = [state.r; state.v]; % pull state
 
