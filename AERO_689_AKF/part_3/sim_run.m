@@ -1,4 +1,4 @@
-function [state_hist, measurement_hist, estimate_hist] = sim_run(inp)
+function sim_run(inp)
 % Simulates dynamics, measurements, and kalman filter for all time
 
 % generate state space dynamics
