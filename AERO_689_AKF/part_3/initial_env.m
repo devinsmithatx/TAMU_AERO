@@ -4,7 +4,7 @@ function [state, measurement] = initial_env(inp, ss)
 % initialize the states
 state.r = inp.r0;                               % pull r0
 state.v = inp.v0;                               % pull v0
-state.w = [0; 0; 0; sqrt(inp.Qs(4,4))]*randn;   % generate an initial w0
+state.w = [0; 0; 0; inp.Qs(4,4)]*randn;   % generate an initial w0
 state.t = 0;                                    % let t0 = 0
 state.falling = true;                           % set falling parameter
 
