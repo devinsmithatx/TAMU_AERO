@@ -12,9 +12,7 @@ y = measurement.y;
 % initial conditions
 x0 = [inp.r0; inp.v0];
 P0 = inp.P0;
-P0_sqrt = sqrtm([P0(2,2) 0; 0 P0(4,4)]);
-P0_sqrt = [0 0 0 0; 0 P0_sqrt(1,1) 0 0; 0 0 0 0; 0 0 0 P0_sqrt(2,2)];
-e0 = P0_sqrt*randn(4,1);
+e0 = [0; 0; 0; 0];
 x_plus = x0 + e0;
 P_plus = P0;
 
@@ -24,7 +22,7 @@ P_min = phi*P_plus*phi' + Qk1;
 
 % update
 K = P_min * H' * (H*P_min*H' + R)^-1;
-x_plus = x_min + K*(y - b - H*x_min);
+x_plus = x_min + K*(y - H*x_min - b );
 P_plus = (eye(4,4) - K*H)*P_min;
 
 % store

@@ -1,12 +1,15 @@
 function estimate = sim_kf(inp, ss, measurement, estimate)
 % Simulates the kalman filter
 
+% pull state space stuff
 Qk1 = ss.Qk1_tm;
 phi = ss.phi_tm;
 uk1 = ss.uk1_tm;
 R = inp.R;
 H = ss.H;
 b = ss.b;
+
+% pull current measurement and the previously propigated state
 y = measurement.y;
 x_plus = estimate.x_plus;
 P_plus = estimate.P_plus;

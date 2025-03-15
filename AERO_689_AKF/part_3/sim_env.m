@@ -6,7 +6,7 @@ x = [state.r; state.v];
 
 % simulate the dynamics
 w = ss.Qk1_sqrt*(randn(4,1));                 % process noise 
-x = ss.phi*x + ss.uk1;                        % update x_k
+x = ss.phi*x + ss.uk1 + w;                    % update x_k
 
 % store the data
 state.r = x(1:2);

@@ -15,7 +15,7 @@ inp.P0 = [0 0 0 0       % [m^2, m^2/s^4] initial estimate error covariance
           0 100 0 0
           0 0 0 0
           0 0 0 10];
-inp.dt = 0.01;          % [s]           simulation time step
+inp.dt = 0.1;          % [s]           simulation time step
 
 %% SIMULATION
 
