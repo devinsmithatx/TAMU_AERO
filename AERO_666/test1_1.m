@@ -1,102 +1,143 @@
-%% Problem 1
-% Test 1
+%% Problem 1, Test 1
 % Devin Smth
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This problem will cover auto and cross corellation sequencies to compute
 % a frequency response of a dynamic system
 
 clear; clc; close all;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Tasks 
+
 % 1. Construct the discrete time model
 
 fs = 1;                         % given sampling frequency
 k = 1;                          % given spring constant
 c = 0.01;                       % given damping coefficient
 
-A = [0  1; -k -c];              % continuous A matrix
-B = [0; 1];                     % continuous B matrix
-dt = 1/fs;                      % samplinng time step
+[Ad, Bd] = discretize(k, c, fs);
 
-Ad = expm(A*dt);                % discrete A matrix
-Bd = (Ad - eye(2,2))*A^-1*B;    % discrete B matrix
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 2. Plot the acceleration output
 
 T0 = 0;                         % given initial time
 Tf = 1023;                      % given final time (1024 samples)
+T = T0:1/fs:Tf;                 % time values
 
-% simulate the discrete dynamics and get the velocity
-vhist = [];
-for T = T0:dt:Tf
-    u = sin(2*T);
-    if T == 0
-        x = [0; 0];
-    else
-        x = Ad*x + Bd*u;
-    end
-    vhist = [vhist; x(2)];
-end
+uhist = sin(2*T);
 
-% compute the acceleration
-ahist = 0;
-for i = 1:(length(vhist) - 1)
-    a = (vhist(i + 1) - vhist(i))/dt;
-    ahist = [ahist; a];
-end
-y = ahist;
+[xhist, ahist] = responseDyn(Ad, Bd, T, uhist);
+responsePlot(xhist, uhist, ahist, T);
 
-% plot the acceleration
-figure
-plot(T0:dt:Tf,y)
-xlim([T0, Tf])
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 3. Apply a random excitation as the input signal to the system and plot
 
+Np = 1024;
 Ne = 512;
-ur(1,1:Ne) = randn(1,Ne).*hann(Ne).';
+uhist = zeros(1,Np);
+uhist(1,1:Ne)= randn(1,Ne).*hann(Ne).';
 
-% simulate the discrete dynamics and get the velocity
-vhist = [];
-for i = 1:length(T0:dt:Tf)
-    if i == 1
-        x = [0; 0];
-    else
-        x = Ad*x + Bd*ur(i);
-    end
-    vhist = [vhist; x(2)];
-end
+[xhist, ahist] = responseDyn(Ad, Bd, T, uhist);
+responsePlot(xhist, uhist, ahist, T);
 
-% compute the acceleration
-ahist = 0;
-for i = 1:(length(vhist) - 1)
-    a = (vhist(i + 1) - vhist(i))/dt;
-    ahist = [ahist; a];
-end
-y = ahist;
-
-% plot the acceleration
-figure
-plot(T0:dt:Tf,y)
-xlim([T0, Tf])
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 4. Compute the DFT of the input/output signals and plot 
 
-Np = 1024;
-Us = fft(ur, Np)/Np;
-Ys = fft(y, Np)/Np;
-w = 0.5*fs*linspace(0,1,Np/2+1);
+Us = fft(uhist, Np)/Np;
+Ys = fft(ahist, Np)/Np;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plotDFT(Ys,Us,fs,Np);
+
 % 5. Compute the correlation functions
 
 YU = Ys.*conj(Us);
 UU = Us.*conj(Us);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 7. Compute the transfer function for k = 2,3,4 and plot 
+% 6. Compute the transfer function for k = 2,3,4 and plot 
 
-Gs = YU./UU;
+figure;
+for k = 1:4
+    [Ad, Bd] = discretize(k, c, fs);
+    [xhist, ahist] = responseDyn(Ad, Bd, T, uhist);
+    Us = fft(uhist, Np)/Np;
+    Ys = fft(ahist, Np)/Np;
+    YU = Ys.*conj(Us);
+    UU = Us.*conj(Us);
+
+    Gs = YU./UU;
+    Gs = abs(Gs);
+    w = 0.5*fs*linspace(0,1,Np/2+1);
+
+    stem(w,Gs(1:Np/2 + 1), DisplayName=['k = ' num2str(k)]); hold on;
+    title("Magnitude of $G(s)$", Interpreter='latex');
+    xlabel("$F$ (Hz)", Interpreter="latex");
+    ylabel('$|G(s)|$', Interpreter='latex');
+    legend()
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Functions
+
+% discretize the system
+function [Ad, Bd] = discretize(k, c, fs)
+    A = [0  1; -k -c];              % continuous A matrix
+    B = [0; 1];                     % continuous B matrix
+    dt = 1/fs;                      % samplinng time step
+    
+    Ad = expm(A*dt);                % discrete A matrix
+    Bd = (Ad - eye(2,2))*A^-1*B;    % discrete B matrix
+end
+
+% simulate the dynamics
+function [xhist, ahist] = responseDyn(Ad, Bd, T, uhist)
+    x = [0; 0];
+    xhist = x;
+    for i = 2:length(T)
+        x = Ad*x + Bd*uhist(i);
+        xhist = [xhist x];
+    end
+    ahist = diff(xhist,2);
+end
+
+% plot the dynamics
+function responsePlot(xhist, uhist, ahist, T)
+    T0 = T(1);
+    Tf = T(end);
+
+    % plot the position
+    figure; stairs(T,xhist(1,:), 'k'); xlim([T0, Tf]); 
+    ylabel("$x$", Interpreter='latex');
+    xlabel("$t$ (s)", Interpreter="latex")
+    title("Position vs. Time", Interpreter="latex")
+    
+    % plot the velocity
+    figure; stairs(T,xhist(2,:), 'k'); xlim([T0, Tf]);
+    ylabel("$\dot{x}$", Interpreter='latex');
+    xlabel("$t$ (s)", Interpreter="latex")
+    title("Velocity vs. Time", Interpreter="latex")
+    
+    % plot the control
+    figure; stairs(T,uhist, 'k'); xlim([T0, Tf]);
+    ylabel("$u$", Interpreter='latex');
+    xlabel("$t$ (s)", Interpreter="latex")
+    title("Control vs. Time", Interpreter="latex")
+    
+    % plot the acceleration
+    figure; stairs(T(1:end - 1), ahist, 'k'); xlim([T0, Tf])
+    ylabel("$\ddot{x}$", Interpreter='latex');
+    xlabel("$t$ (s)", Interpreter="latex")
+    title("Acceleration vs. Time", Interpreter="latex")
+end
+
+% plot the DFT
+function plotDFT(Ys, Us, fs, Np)
+    Um = round(abs(Us(1:Np/2 + 1)),10);
+    Ym = round(abs(Ys(1:Np/2 + 1)),10);
+    w = 0.5*fs*linspace(0,1,Np/2+1);
+    
+    figure; stem(w, Um, 'k'); xlim([w(1) w(end)]);
+    title("DFT of Control", Interpreter='latex');
+    xlabel("$F$ (Hz)", Interpreter="latex");
+    ylabel('$|U(s)|$', Interpreter='latex'); 
+    figure; stem(w, Ym, 'k'); xlim([w(1) w(end)]);
+    title("DFT of Acceleration", Interpreter='latex');
+    xlabel("$F$ (Hz)", Interpreter="latex");
+    ylabel('$|Y(s)|$', Interpreter='latex');
+end

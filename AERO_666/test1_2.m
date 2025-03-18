@@ -1,6 +1,7 @@
 %% Problem 2, Test 1
 % Devin Smth
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Use DFT to compute the Fourier transform of the function f(t) = 8rect(t)
 
 clear; clc; close all;
@@ -33,11 +34,10 @@ Ym = DFT(Ys, T, T0);            % DFT magnitude
 
 rectPlot(t, Ys, B, Ym);         % plots of sampled f(t) and its DFT
 
+% Trying out a higher resultion just bc
 
-% 3. Testing different values of B and N
-
-B = 27;                         % bandwidth
-N = 516;                        % sample count
+B = 4*30;                          % bandwidth
+N = 216*30;                        % sample count
 
 T = 1/(2*B);                    % sampling frequency (nyquist criteria)
 T0 = N*T;                       % final time 
@@ -45,7 +45,19 @@ t = T:T:T0;                     % time values
 Ys = f(t);                      % sampled f(t)
 Ym = DFT(Ys, T, T0);            % DFT magnitude
 
-rectPlot(t, Ys, B, Ym);         % plots of sampled f(t) and its DFT
+N = length(Ys);
+w = B*linspace(0, 1, N/2 + 1);
+    
+% problem configuration
+label = ['N = ' num2str(N) ', B = ' num2str(B) ' Hz'];
+
+% plot DFT of f(t)
+i = find(w==4);
+figure; stem(w(1:i), Ym(1:i), 'k'); xlim([w(1) w(i)]);
+title("DFT of $f(t)$", Interpreter='latex');
+xlabel("$F$ (Hz)", Interpreter="latex");
+ylabel('$F_r$', Interpreter='latex');
+legend(label, Location="north"); 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Functions
@@ -90,8 +102,8 @@ end
 
 % plotting rect(t) and the DFT of f(t) function
 function rectPlot(t, Ys, B, Ym)
-    N = length(Ys); fs = 1/(2*B);
-    w = 0.5*fs*linspace(0, 1, N/2 + 1);
+    N = length(Ys);
+    w = B*linspace(0, 1, N/2 + 1);
     
     % problem configuration
     label = ['N = ' num2str(N) ', B = ' num2str(B) ' Hz'];
