@@ -53,7 +53,7 @@ UU = Us.*conj(Us);
 % 6. Compute the transfer function for k = 2,3,4 and plot 
 
 figure;
-for k = 1:4
+for k = 1:10
     [Ad, Bd] = discretize(k, c, fs);
     [xhist, ahist] = responseDyn(Ad, Bd, T, uhist);
     Us = fft(uhist, Np)/Np;
@@ -66,9 +66,9 @@ for k = 1:4
     w = 0.5*fs*linspace(0,1,Np/2+1);
 
     stem(w,Gs(1:Np/2 + 1), DisplayName=['k = ' num2str(k)]); hold on;
-    title("Magnitude of $G(s)$", Interpreter='latex');
+    title("Magnitude of $G(j\omega)$", Interpreter='latex');
     xlabel("$F$ (Hz)", Interpreter="latex");
-    ylabel('$|G(s)|$', Interpreter='latex');
+    ylabel('$|G(j\omega)|$', Interpreter='latex');
     legend()
 end
 

@@ -52,8 +52,11 @@ w = B*linspace(0, 1, N/2 + 1);
 label = ['N = ' num2str(N) ', B = ' num2str(B) ' Hz'];
 
 % plot DFT of f(t)
-i = find(w==4);
-figure; stem(w(1:i), Ym(1:i), 'k'); xlim([w(1) w(i)]);
+
+% w_end = Np/2 + 1;         % full DFT
+w_end = find(w==4);         % comparing to B = 4
+
+figure; stem(w(1:N/2 + 1), Ym(1:N/2 + 1), 'k'); xlim([w(1) w(w_end)]);
 title("DFT of $f(t)$", Interpreter='latex');
 xlabel("$F$ (Hz)", Interpreter="latex");
 ylabel('$F_r$', Interpreter='latex');
@@ -63,12 +66,12 @@ legend(label, Location="north");
 %% Functions
 
 % rect(t) function
-function yvals = rect(tvals, size)
+function yvals = rect(tvals, width)
     yvals = zeros(1,length(tvals));
     for i = 1:length(tvals)
-        if abs(tvals(i)) == size/2 
+        if abs(tvals(i)) == width/2 
             yvals(i) = 0.5;
-        elseif abs(tvals(i)) < size/2 
+        elseif abs(tvals(i)) < width/2 
             yvals(i) = 1;
         end
     end
@@ -91,7 +94,8 @@ function Ym = DFT(y, T, T0)
     coeff = 1;
     for i = 2:(length(Ym) - 1)
         Ym(i) = Ym(i)*coeff;
-        if abs(Ym(i - 1)) > abs(Ym(i)) && abs(Ym(i + 1)) > abs(Ym(i))
+        if abs(Ym(i - 1)) > abs(Ym(i)) && ...
+                abs(Ym(i + 1)) > abs(Ym(i))
             coeff = -coeff;
             if abs(Ym(i + 1)) > abs(Ym(i - 1))
                 Ym(i) = -Ym(i);
