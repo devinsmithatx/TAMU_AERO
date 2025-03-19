@@ -16,7 +16,10 @@ N = 32;                         % sample count
 T = 1/(2*B);                    % sampling frequency (nyquist criteria)
 T0 = N*T;                       % final time 
 t = T:T:T0;                     % time values
+
 Ys = f(t);                      % sampled f(t)
+Ys = pulstran(t,0:T0:T0,@rectpuls);
+
 Ym = DFT(Ys, T, T0);            % DFT magnitude
 
 rectPlot(t, Ys, B, Ym);         % plots of sampled f(t) and its DFT
@@ -29,7 +32,10 @@ N = 216;                        % sample count
 T = 1/(2*B);                    % sampling frequency (nyquist criteria)
 T0 = N*T;                       % final time 
 t = T:T:T0;                     % time values
+
 Ys = f(t);                      % sampled f(t)
+Ys = pulstran(t,0:T0:T0,@rectpuls);
+
 Ym = DFT(Ys, T, T0);            % DFT magnitude
 
 rectPlot(t, Ys, B, Ym);         % plots of sampled f(t) and its DFT
@@ -42,7 +48,10 @@ N = 216*30;                        % sample count
 T = 1/(2*B);                    % sampling frequency (nyquist criteria)
 T0 = N*T;                       % final time 
 t = T:T:T0;                     % time values
+
 Ys = f(t);                      % sampled f(t)
+% Ys = pulstran(t,0:T0:T0,@rectpuls);
+
 Ym = DFT(Ys, T, T0);            % DFT magnitude
 
 N = length(Ys);
@@ -53,7 +62,7 @@ label = ['N = ' num2str(N) ', B = ' num2str(B) ' Hz'];
 
 % plot DFT of f(t)
 
-% w_end = Np/2 + 1;         % full DFT
+% w_end = N/2 + 1;         % full DFT
 w_end = find(w==4);         % comparing to B = 4
 
 figure; stem(w(1:N/2 + 1), Ym(1:N/2 + 1), 'k'); xlim([w(1) w(w_end)]);
@@ -79,7 +88,7 @@ end
 
 % sampled f(t) function
 function y = f(t)    
-    y = 8*(rect(t,1) + rect(t-t(end), 1));
+    y = 8*(rectpuls(t,1) + rectpuls(t-t(end), 1));
 end
 
 % DFT of f(t) function
