@@ -24,7 +24,7 @@ Tf = 1023;                      % given final time (1024 samples)
 T = T0:1/fs:Tf;                 % time values
 
 Ne = 512;
-Np = 1024;
+Np = length(T);
 uhist = zeros(2,Np);
 uhist(:,1:Ne) = randn(2,Ne).*hann(Ne).';
 
@@ -48,13 +48,13 @@ G33s = X3U3./U3U3;
 
 plotG(G31s, G33s, fs, Np)
 
-    A = [0 0 0 1 0 0;
-         0 0 0 0 1 0;
-         0 0 0 0 0 1;
-         -2*k k 0 (-c1 - c2) c2 0;
-         k -2*k k c2 (-c2 - c3) c3;
-         0 k -k 0 0 0];
-wn = imag(eig(A))/(2*pi)
+A = [0 0 0 1 0 0;
+     0 0 0 0 1 0;
+     0 0 0 0 0 1;
+    -2*k  k    0 (-c1 - c2) c2         0;
+     k   -2*k  k c2         (-c2 - c3) c3;
+     0    k   -k 0          0          0];
+wn = imag(eig(A))/(2*pi);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Functions

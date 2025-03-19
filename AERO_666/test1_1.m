@@ -30,7 +30,7 @@ responsePlot(xhist, uhist, ahist, T);
 
 % 3. Apply a random excitation as the input signal to the system and plot
 
-Np = 1024;
+Np = length(T);
 Ne = 512;
 uhist = zeros(1,Np);
 uhist(1,1:Ne)= randn(1,Ne).*hann(Ne).';
