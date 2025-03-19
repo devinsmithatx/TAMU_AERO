@@ -15,16 +15,16 @@ k = 10;             % given k (N/m)
 c1 = 0.05;          % given c1 
 c2 = 0.07;          % given c2 
 c3 = 0.04;          % given c3
-fs = 1;             % chose same fs as problem 1
+fs = 2;             % chose same fs as problem 1
 
 [Ad, Bd] = discretize(m, k, c1, c2, c3, fs);
 
 T0 = 0;                         % given initial time
-Tf = 1023;                      % given final time (1024 samples)
-T = T0:1/fs:Tf;                 % time values
+Tf = 1024;                      % given final time (1024 samples)
+T = T0:1/fs:(Tf - 1/fs);        % time values
 
-Ne = 512;
 Np = length(T);
+Ne = Np/2;
 uhist = zeros(2,Np);
 uhist(:,1:Ne) = randn(2,Ne).*hann(Ne).';
 
@@ -54,7 +54,9 @@ A = [0 0 0 1 0 0;
     -2*k  k    0 (-c1 - c2) c2         0;
      k   -2*k  k c2         (-c2 - c3) c3;
      0    k   -k 0          0          0];
-wn = imag(eig(A))/(2*pi);
+A(4:end,:) = A(4:end,:)/m;
+wn = imag(eig(A))/(2*pi)
+A
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Functions
@@ -67,14 +69,14 @@ function [Ad, Bd] = discretize(m, k, c1, c2, c3, fs)
          -2*k k 0 (-c1 - c2) c2 0;
          k -2*k k c2 (-c2 - c3) c3;
          0 k -k 0 0 0];
-    A(3:end) = A(3:end)/m;
+    A(4:end,:) = A(4:end,:)/m;
         
     B = [0 0;
          0 0;
          0 0;
-         1 0;
+         1/m 0;
          0 0; 
-         0 1;];
+         0 1/m;];
 
     dt = 1/fs;                      % samplinng time step
     

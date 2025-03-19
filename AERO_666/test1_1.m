@@ -20,8 +20,8 @@ c = 0.01;                       % given damping coefficient
 % 2. Plot the acceleration output
 
 T0 = 0;                         % given initial time
-Tf = 1023;                      % given final time (1024 samples)
-T = T0:1/fs:Tf;                 % time values
+Tf = 1024;                      % given final time (1024 samples)
+T = T0:1/fs:(Tf - 1/fs);        % time values
 
 uhist = sin(2*T);
 
@@ -53,7 +53,7 @@ UU = Us.*conj(Us);
 % 6. Compute the transfer function for k = 2,3,4 and plot 
 
 figure;
-for k = 1:10
+for k = 1:4
     [Ad, Bd] = discretize(k, c, fs);
     [xhist, ahist] = responseDyn(Ad, Bd, T, uhist);
     Us = fft(uhist, Np)/Np;
