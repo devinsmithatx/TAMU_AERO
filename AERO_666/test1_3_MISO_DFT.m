@@ -40,6 +40,7 @@ plotDFT(X3s,U1s,U3s,fs,Np);
 X3U1 = X3s.*conj(U1s);
 U1U1 = U1s.*conj(U1s);
 G31s = X3U1./U1U1;
+
 X3U3 = X3s.*conj(U3s);
 U3U3 = U3s.*conj(U3s);
 G33s = X3U3./U3U3;
@@ -51,11 +52,13 @@ plotG(G31s, G33s, fs, Np)
 A = [0 0 0 1 0 0;
      0 0 0 0 1 0;
      0 0 0 0 0 1;
-    -2*k  k    0 (-c1 - c2) c2         0;
-     k   -2*k  k c2         (-c2 - c3) c3;
-     0    k   -k 0          0          0];
+    -2*k  k    0 (-c1 - c2) c2          0;
+     k   -2*k  k c2         (-c2 - c3)  c3;
+     0    k   -k 0          c3         -c3];
 A(4:end,:) = A(4:end,:)/m;
 wn = imag(eig(A))/(2*pi);
+disp('w_n =')
+disp(wn)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Functions
@@ -67,7 +70,7 @@ function [Ad, Bd] = discretize(m, k, c1, c2, c3, fs)
          0 0 0 0 0 1;
          -2*k k 0 (-c1 - c2) c2 0;
          k -2*k k c2 (-c2 - c3) c3;
-         0 k -k 0 0 0];
+         0 k -k 0 c3 -c3];
     A(4:end,:) = A(4:end,:)/m;
         
     B = [0 0;
@@ -180,17 +183,17 @@ function plotDFT(X3s, U1s, U3s, fs, Np)
     figure; stem(w, U1m, 'k'); xlim([w(1) w(end)]);
     title("DFT of Control 1", Interpreter='latex');
     xlabel("$F$ (Hz)", Interpreter="latex");
-    ylabel('$|U_1(s)|$', Interpreter='latex'); 
+    ylabel('$|U_1(j\omega)|$', Interpreter='latex'); 
 
     figure; stem(w, U3m, 'k'); xlim([w(1) w(end)]);
     title("DFT of Control 3", Interpreter='latex');
     xlabel("$F$ (Hz)", Interpreter="latex");
-    ylabel('$|U_3(s)|$', Interpreter='latex'); 
+    ylabel('$|U_3(j\omega)|$', Interpreter='latex'); 
     
     figure; stem(w, X3m, 'k'); xlim([w(1) w(end)]);
     title("DFT of Position 3", Interpreter='latex');
     xlabel("$F$ (Hz)", Interpreter="latex");
-    ylabel('$|X_3(s)|$', Interpreter='latex');
+    ylabel('$|X_3(j\omega)|$', Interpreter='latex');
 end
 
 % plot G(s)
@@ -200,12 +203,12 @@ function plotG(G13s, G33s, fs, Np)
     w = 0.5*fs*linspace(0,1,Np/2+1);
 
     figure; stem(w,G13s(1:Np/2 + 1), 'k');
-    title('Magnitude of $G_{31}(s)$', Interpreter='latex');
+    title('Magnitude of $G_{31}(j\omega)$', Interpreter='latex');
     xlabel("$F$ (Hz)", Interpreter="latex");
-    ylabel('$|G_{31}(s)|$', Interpreter='latex');
+    ylabel('$|G_{31}(j\omega)|$', Interpreter='latex');
 
     figure; stem(w,G33s(1:Np/2 + 1), 'k');
-    title('Magnitude of $G_{33}(s)$', Interpreter='latex');
+    title('Magnitude of $G_{33}(j\omega)$', Interpreter='latex');
     xlabel("$F$ (Hz)", Interpreter="latex");
-    ylabel('$|G_{33}(s)|$', Interpreter='latex');
+    ylabel('$|G_{33}(j\omega)|$', Interpreter='latex');
 end

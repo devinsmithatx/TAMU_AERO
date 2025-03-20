@@ -11,16 +11,19 @@ clear; clc; close all;
 
 % 1. Construct the discrete time model
 
-fs = 1;                         % given sampling frequency
-k = 1;                          % given spring constant
-c = 0.01;                       % given damping coefficient
+fs = 1;                 % sampling frequency
+k = 1;                  % spring constant
+c = 0.01;               % damping coefficient
 
 [Ad, Bd] = discretize(k, c, fs);
 
+disp('A_d ='); disp(Ad)
+disp('B_d ='); disp(Bd)
+
 % 2. Plot the acceleration output
 
-T0 = 0;                         % given initial time
-Tf = 1024;                      % given final time (1024 samples)
+T0 = 0;                         % initial time
+Tf = 1024;                      % final time
 T = T0:1/fs:(Tf - 1/fs);        % time values
 
 uhist = sin(2*T);
@@ -54,6 +57,9 @@ UU = Us.*conj(Us);
 
 figure;
 for k = 1:4
+    wn = sqrt(k)/(2*pi); 
+    disp(['k = ' num2str(k) ', w_n = ' num2str(wn)]);
+
     [Ad, Bd] = discretize(k, c, fs);
     [xhist, ahist] = responseDyn(Ad, Bd, T, uhist);
     Us = fft(uhist, Np)/Np;
@@ -75,7 +81,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Functions
 
-% discretize the system
+% function to discretize the system
 function [Ad, Bd] = discretize(k, c, fs)
     A = [0  1; -k -c];              % continuous A matrix
     B = [0; 1];                     % continuous B matrix
@@ -85,7 +91,7 @@ function [Ad, Bd] = discretize(k, c, fs)
     Bd = (Ad - eye(2,2))*A^-1*B;    % discrete B matrix
 end
 
-% simulate the dynamics
+% function to simulate the dynamics
 function [xhist, ahist] = responseDyn(Ad, Bd, T, uhist)
     x = [0; 0];
     xhist = x;
@@ -96,7 +102,7 @@ function [xhist, ahist] = responseDyn(Ad, Bd, T, uhist)
     ahist = diff(xhist,2);
 end
 
-% plot the dynamics
+% function to plot the dynamics
 function responsePlot(xhist, uhist, ahist, T)
     T0 = T(1);
     Tf = T(end);
@@ -126,7 +132,7 @@ function responsePlot(xhist, uhist, ahist, T)
     title("Acceleration vs. Time", Interpreter="latex")
 end
 
-% plot the DFT
+% function to plot the DFT
 function plotDFT(Ys, Us, fs, Np)
     Um = round(abs(Us(1:Np/2 + 1)),10);
     Ym = round(abs(Ys(1:Np/2 + 1)),10);
@@ -135,9 +141,9 @@ function plotDFT(Ys, Us, fs, Np)
     figure; stem(w, Um, 'k'); xlim([w(1) w(end)]);
     title("DFT of Control", Interpreter='latex');
     xlabel("$F$ (Hz)", Interpreter="latex");
-    ylabel('$|U(s)|$', Interpreter='latex'); 
+    ylabel('$|U(j\omega)|$', Interpreter='latex'); 
     figure; stem(w, Ym, 'k'); xlim([w(1) w(end)]);
     title("DFT of Acceleration", Interpreter='latex');
     xlabel("$F$ (Hz)", Interpreter="latex");
-    ylabel('$|Y(s)|$', Interpreter='latex');
+    ylabel('$|Y(j\omega)|$', Interpreter='latex');
 end

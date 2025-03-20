@@ -17,12 +17,10 @@ T = 1/(2*B);                    % sampling frequency (nyquist criteria)
 T0 = N*T;                       % final time 
 t = T:T:T0;                     % time values
 
-Ys = f(t);                      % sampled f(t)
-Ys = pulstran(t,0:T0:T0,@rectpuls);
+Y = f(t);                      % sampled f(t)
+Ys = DFT(Y, T, T0);            % DFT magnitude
 
-Ym = DFT(Ys, T, T0);            % DFT magnitude
-
-rectPlot(t, Ys, B, Ym);         % plots of sampled f(t) and its DFT
+rectPlot(t, Y, B, Ys);         % plots of sampled f(t) and its DFT
 
 % 2. Calculate the discrete Fourier transform pair for N = 216, B = 4 Hz
 
@@ -33,12 +31,10 @@ T = 1/(2*B);                    % sampling frequency (nyquist criteria)
 T0 = N*T;                       % final time 
 t = T:T:T0;                     % time values
 
-Ys = f(t);                      % sampled f(t)
-Ys = pulstran(t,0:T0:T0,@rectpuls);
+Y = f(t);                      % sampled f(t)
+Ys = DFT(Y, T, T0);            % DFT magnitude
 
-Ym = DFT(Ys, T, T0);            % DFT magnitude
-
-rectPlot(t, Ys, B, Ym);         % plots of sampled f(t) and its DFT
+rectPlot(t, Y, B, Ys);         % plots of sampled f(t) and its DFT
 
 % Trying out a higher resultion just bc
 
@@ -49,12 +45,10 @@ T = 1/(2*B);                    % sampling frequency (nyquist criteria)
 T0 = N*T;                       % final time 
 t = T:T:T0;                     % time values
 
-Ys = f(t);                      % sampled f(t)
-% Ys = pulstran(t,0:T0:T0,@rectpuls);
+Y = f(t);                      % sampled f(t)
+Ys = DFT(Y, T, T0);            % DFT magnitude
 
-Ym = DFT(Ys, T, T0);            % DFT magnitude
-
-N = length(Ys);
+N = length(Y);
 w = B*linspace(0, 1, N/2 + 1);
     
 % problem configuration
@@ -65,7 +59,7 @@ label = ['N = ' num2str(N) ', B = ' num2str(B) ' Hz'];
 % w_end = N/2 + 1;         % full DFT
 w_end = find(w==4);         % comparing to B = 4
 
-figure; stem(w(1:N/2 + 1), Ym(1:N/2 + 1), 'k'); xlim([w(1) w(w_end)]);
+figure; stem(w(1:N/2 + 1), Ys(1:N/2 + 1), 'k'); xlim([w(1) w(w_end)]);
 title("DFT of $f(t)$", Interpreter='latex');
 xlabel("$F$ (Hz)", Interpreter="latex");
 ylabel('$F_r$', Interpreter='latex');
@@ -88,7 +82,7 @@ end
 
 % sampled f(t) function
 function y = f(t)    
-    y = 8*(rectpuls(t,1) + rectpuls(t-t(end), 1));
+    y = 8*(rect(t,1) + rect(t-t(end), 1));
 end
 
 % DFT of f(t) function
@@ -114,22 +108,22 @@ function Ym = DFT(y, T, T0)
 end
 
 % plotting rect(t) and the DFT of f(t) function
-function rectPlot(t, Ys, B, Ym)
-    N = length(Ys);
+function rectPlot(t, Y, B, Ys)
+    N = length(Y);
     w = B*linspace(0, 1, N/2 + 1);
     
     % problem configuration
     label = ['N = ' num2str(N) ', B = ' num2str(B) ' Hz'];
 
     % plot sampled f(t)
-    figure; stem(t, Ys, 'k'); xlim([t(1) t(end)]);
+    figure; stem(t, Y, 'k'); xlim([t(1) t(end)]);
     title("Sampled $f(t)$", Interpreter='latex');
     xlabel("$t$ (s)", Interpreter="latex"); 
     ylabel('$f_k$', Interpreter='latex');
     legend(label, Location="north"); 
     
     % plot DFT of f(t)
-    figure; stem(w, Ym, 'k'); xlim([w(1) w(end)]);
+    figure; stem(w, Ys, 'k'); xlim([w(1) w(end)]);
     title("DFT of $f(t)$", Interpreter='latex');
     xlabel("$F$ (Hz)", Interpreter="latex");
     ylabel('$F_r$', Interpreter='latex');
