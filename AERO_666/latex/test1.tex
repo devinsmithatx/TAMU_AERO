@@ -1,0 +1,791 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{matlab-prettifier}
+\usepackage{chngcntr}
+\counterwithin{figure}{section}
+\usepackage[demo]{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{pdfpages}
+
+\title{Test 1:\\Fourier Transforms and Frequency Domain Analysis}
+\author{Devin Smith\\UIN: 330000494}
+\date{Systems Analysis\\AERO 666}
+
+\begin{document}
+\maketitle
+
+This is a report containing my solutions and results to the problems given in Test 1. All relevant figures and code are presented within their appropriate sections. Any additional figures are in the appendix, and all MATLAB code used is found in the comprehensive \texttt{.m} files attached the end of this document. 
+
+\section{Project 1}
+\subsection{Introduction}
+
+In this project, we will learn about the use of auto and cross-correlation sequences to compute the frequency response of a dynamic system. Consider the damped harmonic oscillator given by $\ddot{x}=-kx-c\dot{x}+u$, where $x(t)$ is a displacement of the unit mass and $u(t)$ is the applied force. Assume that the acceleration is available for measurement. Generate measurements in discrete time as outputs of this dynamical system. Choose a  sampling frequency of $f_s=1$ $Hz$, and a sampling interval of $T_f=1024$ seconds with zero as the initial time.
+
+\subsection{Tasks}
+
+\begin{enumerate}
+    \item Compute the state transition matrix using the matrix exponential $A_d=e^{Adt}=I+Adt+\frac{1}{2}A^2dt^2+\dots$ (use expm() function of MATLAB). The discrete-time equivalent of the system matrix $B$ is $B_d=(A_d-I_{2\times2})A^{-1}B$, where we have assumed a zero-order hold approximation of discretizing the continuous states. $A$ and $B$ are the first-order state-space representations of the damped harmonic oscillator.
+    
+    \item For zero initial conditions (both position and velocity) plot the acceleration output sensed by an accelerometer placed at the unit mass as a function of the discrete sampled time for an sinusoidal excitation $u(t)=sin(2t)$. Use the values of $k=1$ and $c=0.01$.
+    
+    \item Now apply a random excitation as the input signal to the system. Choose some parameters for the discrete Fourier transformation algorithm ($N_e=512$, $N_p=1024$), using the MATLAB command \texttt{ur(1,1:Ne) =\\randn(1,Ne).*hanning(Ne).';}. The post multiplication operation is known as windowing. It prevents frequency spill over caused by the compact support of the time domain signal (truncation in time domain). Plot the output of the system as a function of time.
+    
+    \item Compute the discrete Fourier transformation (DFT) of the output signal obtained and the input signal obtained. You may use the commands, \texttt{Us = fft(ur, Np)/Np; Ys = fft(y, Np)/Np;} and frequency can be measured as \texttt{w = 0.5*fs*linspace(0,1,Np/2+1);} This is the frequency in $Hz$. Plot the absolute values of the signals (input and output) in the Fourier domain and comment on what you can say about their frequency content.
+
+    \item Now compute the correlation functions \texttt{YU = Ys.*conj(Us); UU = \\Us.*conj(Us);} Note that these are frequency wise products of the content. The \texttt{UU} function is the autocovariance function and the \texttt{YU} is the cross-covariance function. They are element-wise products in the frequency domain. Elaborate on the significance of this, and explain clearly why we are considering this elemental multiplications of the transformed signals with their conjugates.
+
+    \item Now, compute the elemental division of the signals \texttt{Gs = YU./UU;}. Plot the magnitude of this function as a function of the frequency. Recompute this function using DFTs of the input-output signal data for different values of the stiffness (consider $k=2,3,4$). What do you notice in the magnitude of the ratio plot? This function is known as the Frequency Response Function. Its analytical representation can be written as $G(s)=\frac{1}{s^2+cs+k}=\frac{Y(s)}{U(s)}$, $s=j\omega$, which is the frequency response of the damped harmonic oscillator.
+\end{enumerate}
+
+\subsection{Solution}
+\begin{enumerate}
+    \item A function was created which uses given values of $k$, $c$, and $f_s$ to generate the discrete-time state-space matrices $A_d$ and $B_d$.
+
+
+    \begin{lstlisting}[style=Matlab-editor]
+fs = 1;                 % sampling frequency
+k = 1;                  % spring constant
+c = 0.01;               % damping coefficient
+
+[Ad, Bd] = discretize(k, c, fs);
+
+% function to discretize the system
+function [Ad, Bd] = discretize(k, c, fs)
+    A = [0  1; -k -c];
+    B = [0; 1];
+    dt = 1/fs;
+    
+    Ad = expm(A*dt);
+    Bd = (Ad - eye(2,2))*A^-1*B;
+end
+    \end{lstlisting}
+
+    \item A function was created to simulate the discrete dynamics using the discrete control for all $t$ values, and then generate the acceleration data by using a finite difference method on the velocity data. Another function was made to plot all the the control and the acceleration output for all $t$ values.
+
+        \begin{lstlisting}[style=Matlab-editor]
+T0 = 0;                         % initial time
+Tf = 1024;                      % final time
+T = T0:1/fs:(Tf - 1/fs);        % time values
+
+uhist = sin(2*T);
+
+[xhist, ahist] = responseDyn(Ad, Bd, T, uhist);
+
+responsePlot(uhist, ahist, T);
+
+% function to simulate the dynamics
+function [xhist, ahist] = responseDyn(Ad, Bd, T, uhist)
+    x = [0; 0];
+    xhist = x;
+    for i = 2:length(T)
+        x = Ad*x + Bd*uhist(i);
+        xhist = [xhist x];
+    end
+    ahist = diff(xhist,2);
+end
+
+% function to plot the dynamics
+function responsePlot(uhist, ahist, T)
+    T0 = T(1);
+    Tf = T(end);
+    
+    % plot the control
+    figure; stairs(T,uhist, 'k'); 
+    xlim([T0, Tf]);
+    ylabel("$u$", Interpreter='latex');
+    xlabel("$t$ (s)", Interpreter="latex")
+    title("Control vs. Time", ...
+        Interpreter="latex")
+    
+    % plot the acceleration
+    figure; stairs(T(1:end - 1), ahist, 'k'); 
+    xlim([T0, Tf])
+    ylabel("$\ddot{x}$", Interpreter='latex');
+    xlabel("$t$ (s)", Interpreter="latex")
+    title("Acceleration vs. Time", ...
+        Interpreter="latex")
+end
+    \end{lstlisting}
+
+    \item Using the previous functions for simulating and plotting the dynamics, the process could be repeated for the randomly generated and windowed control inputs, as shown below.
+
+    \begin{lstlisting}[style=Matlab-editor]
+Np = length(T);
+Ne = 512;
+uhist = zeros(1,Np);
+uhist(1,1:Ne)= randn(1,Ne).*hann(Ne).';
+
+[xhist, ahist] = responseDyn(Ad, Bd, T, uhist);
+responsePlot(xhist, uhist, ahist, T);
+    \end{lstlisting}
+
+    \item For plotting the DFTs, the DFTs were first calculated using a built-in MATLAB command, and then a function was creating to proccess the DFT data to ouput plots of magnitude versus frequency for the control and acceleration data, as shown below.
+
+        \begin{lstlisting}[style=Matlab-editor]
+Us = fft(uhist, Np)/Np;
+Ys = fft(ahist, Np)/Np;
+
+plotDFT(Ys,Us,fs,Np);
+
+% function to plot the DFT
+function plotDFT(Ys, Us, fs, Np)
+    Um = round(abs(Us(1:Np/2 + 1)),10);
+    Ym = round(abs(Ys(1:Np/2 + 1)),10);
+    w = 0.5*fs*linspace(0,1,Np/2+1);
+    
+    figure; stem(w, Um, 'k'); xlim([w(1) w(end)]);
+    title("DFT of Control", Interpreter='latex');
+    xlabel("$F$ (Hz)", Interpreter="latex");
+    ylabel('$|U(j\omega)|$', Interpreter='latex'); 
+    figure; stem(w, Ym, 'k'); xlim([w(1) w(end)]);
+    title("DFT of Acceleration", ...
+        Interpreter='latex');
+    xlabel("$F$ (Hz)", Interpreter="latex");
+    ylabel('$|Y(j\omega)|$', Interpreter='latex');
+end
+    \end{lstlisting}
+
+    \item The correlation functions can be calculated using element-wise producs in the freqency domain and their conjugates, as shown below. The element-wise products show the similarity between two signals at each frequency, where the complex conjugate is accounting for both magnitude and frequency. The cross-covariance gives the similarity of $Y(s)$ and $U(s)$ are at each frequency, and the auto-covariance gives the variance (or power) of $U(s)$.  Dividing the cross-power spectral density of the input-output relationship with the power spectral density of the input gives the transfer function $G(s)$.
+
+    \begin{lstlisting}[style=Matlab-editor]
+YU = Ys.*conj(Us);
+UU = Us.*conj(Us);
+    \end{lstlisting}
+
+    \item Lastly, the transfer function $G(s)$ can be calculated using the corelation functions. With the functions defined in the previous steps, this process can be easily repeated with a for-loop for values of $k=1,2,3,4$. 
+
+    \begin{lstlisting}[style=Matlab-editor]
+figure;
+for k = 1:4
+    wn = sqrt(k)/(2*pi); 
+
+    [Ad, Bd] = discretize(k, c, fs);
+    [xhist, ahist] = responseDyn(Ad, Bd, ...
+        T, uhist);
+    Us = fft(uhist, Np)/Np;
+    Ys = fft(ahist, Np)/Np;
+    YU = Ys.*conj(Us);
+    UU = Us.*conj(Us);
+
+    Gs = YU./UU;
+    Gs = abs(Gs);
+    w = 0.5*fs*linspace(0,1,Np/2+1);
+
+    stem(w,Gs(1:Np/2 + 1), ...
+        DisplayName=['k = ' num2str(k)]); hold on;
+    title("Magnitude of $G(j\omega)$", ...
+        Interpreter='latex');
+    xlabel("$F$ (Hz)", Interpreter="latex");
+    ylabel('$|G(j\omega)|$', Interpreter='latex');
+    legend()
+end
+    \end{lstlisting}
+\end{enumerate}
+
+\subsection{Results}
+\begin{enumerate}
+    \item With the given values for $f_s$, $k$, and $c$, the matrices $A_d$ and $B_d$ were calculated by discretizing the continuous $A$ and $B$ matrices and the sampling frequency.
+    \begin{lstlisting}[style=Matlab-editor]
+A_d =
+    0.5418    0.8373
+   -0.8373    0.5334
+
+
+B_d =
+    0.4582
+    0.8373
+    \end{lstlisting}
+
+    \item Using the discretized dynamics and a discretely sampled $u(t)=sin(2t)$, the time history of the states was simulated. Using a finite difference method, acceleration data was calculated using the velocity data. The control inputs and the acceleration data is plotted below. State plots are found in the appendix. 
+
+    \begin{figure}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p1_f3.png}
+      \caption{Control vs. Time}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p1_f4.png}
+      \caption{Acceleration vs. Time}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{Input and Output Plots for $u(t)=sin(2t)$}
+    \label{fig:test}
+    \end{figure}
+    
+    \item The process was repeated with a random set of windowed control inputs followed by a free response. The time history of control inputs and the acceleration data is plotted below. State plots are found in the appendix.
+    
+    \begin{figure}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p1_f7.png}
+      \caption{Control vs. Time}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p1_f8.png}
+      \caption{Acceleration vs. Time}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{Input and Output Plots for Random $u(t)$}
+    \label{fig:test}
+    \end{figure}
+
+    \newpage 
+    \item The frequency content of the input data and the output data via DFT. The control data has a random magnitude frequency content across the frequency spectrum of $0 \rightarrow \omega=1$ $Hz$. The output data has a magnitude spike around $\omega=0.159$ $Hz$, which is around the natural frequency of this spring-mass-damper system for $k=1$, as $\omega_n=\frac{1}{2\pi}\sqrt{k}=0.159$ $Hz$.
+
+    \begin{figure}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p1_f9.png}
+      \caption{DFT of Control}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p1_f10.png}
+      \caption{DFT of Acceleration}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{Input and Output DFT for Random $u(t)$}
+    \label{fig:test}
+    \end{figure}
+    
+    \item The cross correlation functions were calculated with element-wise multiplication of the DFTs and their complex conjugates for the input and output signals. Again, the element-wise products show the similarity between two signals at each frequency, where the complex conjugate is accounting for both magnitude and frequency. The cross-covariance gives the similarity of $Y(s)$ and $U(s)$ are at each frequency, and the auto-covariance gives the variance (or power) of $U(s)$.  Dividing the cross-power spectral density of the input-output relationship with the power spectral density of the input gives the transfer function $G(s)$.
+
+
+    \item The transfer function $G(s)$ was calculated with the input and output signal correlation functions for $k=1,2,3,4$. For each value of $k$, the plot of $G(s)$ has a spike at $\omega_n=\frac{1}{2\pi}\sqrt{k}$. Additionally, as $k$ increases, the peak magnitude of $G(s)$ increases, meaning there are higher peak values for $k=4$ than $k=1$ for acceleration.
+
+    \begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{p1_f11.png}
+    \caption{Magnitude plot of $G(s)$ for $k=1,2,3,4$}
+    \label{fig:enter-label}
+\end{figure}
+
+\end{enumerate}
+
+\clearpage
+
+\section{Project 2}
+\subsection{Introduction}
+
+Use DFT to compute the Fourier Transform of the function $f(t)=8$rect$(t)$. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.65\linewidth]{p2_f1.png}
+    \caption{$f(t)=8$rect$(t)$ and its Fourier Transform $F(\omega)=\frac{sin(\omega)}{\omega}$}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.65\linewidth]{p2_f2.png}
+    \caption{$N=32$ point DFT}
+    \label{fig:enter-label}
+\end{figure}
+
+\newpage
+
+\subsection{Tasks}
+
+\begin{enumerate}
+    \item Using the choice of $N=32$, calculate the discrete Fourier transform pair for the pulse (or rect$(t)$ function shown in Figures 1 and 2). Consider the essential bandwidth of $B=4$ $Hz$ from Figure 1 so that some aliasing exists. To support Nyquist criterion, choose $T=\frac{1}{8}=\frac{1}{2B}$, $N=\frac{T_0}{T}=32$. Verify the discrete Fourier transformation of the sampled pulse function is the profile shown in Figure 2.2.
+    
+    \item Repeat the process with $N=216$. Report the differences between the $N=32$ and $N=216$ cases. Explain your observations.
+\end{enumerate}
+
+\subsection{Solution}
+\begin{enumerate}
+    \item A function was created to calculate the rect$(t)$ function for a given set of $t$ values and a given width value for the pulse. Additionally, another function was created to calculate the periodic sampled $f(t)$ to use for the DFT. With these MATLAB functions, the sampled $f(t)$ can be constructed using a set of $t$ values calculating using the bandwidth and sample count, as shown below.
+
+    \begin{lstlisting}[style=Matlab-editor]
+B = 4;                          % bandwidth
+N = 32;                         % sample count
+
+T = 1/(2*B);                    % sampling freq
+T0 = N*T;                       % final time 
+t = T:T:T0;                     % time values
+
+Y = f(t);                      % sampled f(t)
+
+% sampled f(t) function
+function y = f(t)    
+    y = 8*(rect(t,1) + rect(t-t(end), 1));
+end
+
+% rect(t) function
+function yvals = rect(tvals, width)
+    yvals = zeros(1,length(tvals));
+    for i = 1:length(tvals)
+        if abs(tvals(i)) == width/2 
+            yvals(i) = 0.5;
+        elseif abs(tvals(i)) < width/2 
+            yvals(i) = 1;
+        end
+    end
+end
+    \end{lstlisting}
+
+    With the sampled function, the DFT can be calculated and then plotted. Two more functions were created in MATLAB for these purposes. The first calculates the DFT of the signal and generates the magnitude values of the DFT for plotting purposes. The next function plots both the sampled signal and its DFT.  With all of the functions, the DFT can be plotted for any bandwidth value, $B$, and any sample count, $N$.
+
+    \begin{lstlisting}[style=Matlab-editor]
+Ys = DFT(Ys, T, T0);        % DFT magnitude
+rectPlot(t, Y, B, Ys);      % plot f(t) & DFT
+    
+% DFT of f(t) function
+function Ym = DFT(y, T, T0)
+    N = T0/T;
+
+    % DFT of y(t) and the magnitude of the DFT
+    Ys = T0*fft(y, N)/N;
+    Ym = round(abs(Ys(1:N/2 + 1)),10);
+
+    % apply sign flips
+    coeff = 1;
+    for i = 2:(length(Ym) - 1)
+        Ym(i) = Ym(i)*coeff;
+        if abs(Ym(i - 1)) > abs(Ym(i)) && ...
+                abs(Ym(i + 1)) > abs(Ym(i))
+            coeff = -coeff;
+            if abs(Ym(i + 1)) > abs(Ym(i - 1))
+                Ym(i) = -Ym(i);
+            end
+        end   
+    end
+end
+
+% plotting rect(t) and the DFT of f(t) function
+function rectPlot(t, Y, B, Ys)
+    N = length(Y);
+    w = B*linspace(0, 1, N/2 + 1);
+    
+    % problem configuration
+    label = ['N = ' num2str(N) ', B = ' ...
+              num2str(B) ' Hz'];
+
+    % plot sampled f(t)
+    figure; stem(t, Y, 'k'); xlim([t(1) t(end)]);
+    title("Sampled $f(t)$", Interpreter='latex');
+    xlabel("$t$ (s)", Interpreter="latex"); 
+    ylabel('$f_k$', Interpreter='latex');
+    legend(label, Location="north"); 
+    
+    % plot DFT of f(t)
+    figure; stem(w, Ys, 'k'); xlim([w(1) w(end)]);
+    title("DFT of $f(t)$", Interpreter='latex');
+    xlabel("$F$ (Hz)", Interpreter="latex");
+    ylabel('$F_r$', Interpreter='latex');
+    legend(label, Location="north"); 
+end
+    \end{lstlisting}
+
+    \item The entire process can be easily replicated for $N=216$, or any $N$ value using the functions created, as shown below.
+
+    \begin{lstlisting}[style=Matlab-editor]
+B = 4;                          % bandwidth
+N = 216;                        % sample count
+
+T = 1/(2*B);                    % sampling freq
+T0 = N*T;                       % final time 
+t = T:T:T0;                     % time values
+
+Y = f(t);                      % sampled f(t)
+
+Ys = DFT(Y, T, T0);            % DFT magnitude
+rectPlot(t, Y, B, Ys);         % plot f(t) & DFT
+    \end{lstlisting}   
+\end{enumerate}
+
+\subsection{Results}
+\begin{enumerate}
+    \item The 32-point DFT shown in Figure 2.2 was recreated for $B=4$ $Hz$. The sampled $f(t)$ and DFT are shown below. 
+
+    \begin{figure}[h]
+        \centering
+        \begin{subfigure}{.5\textwidth}
+          \centering
+          \includegraphics[width=1\linewidth]{p2_s1.png}
+          \caption{Sampled $f(t)=8$rect$(t)$}
+          \label{fig:sub1}
+        \end{subfigure}%
+        \begin{subfigure}{.5\textwidth}
+          \centering
+          \includegraphics[width=1\linewidth]{p2_s2.png}
+          \caption{DFT of $f(t)=8$rect$(t)$}
+          \label{fig:sub2}
+        \end{subfigure}
+        \caption{Fourier Transform Pair for $N=32$ and $B=4$}
+        \label{fig:test}
+    \end{figure}
+
+    \item The 216-point DFT was recreated for $B=4$ $Hz$. With the $N=216$ DFT, the overall shape and magnitude of the DFT remains the same due to the same bandwidth of $4$ $Hz$ and sampling of $f_s=8$ $Hz$, however, with more samples, there are more points to fill the gaps. It can be inferred that as $N \rightarrow \infty$, the DFT will approach a continuous function. While not shown, for negative frequencies and frequencies beyond $B$, the DFT is mirrored.
+    
+    \begin{figure}[h]
+        \centering
+        \begin{subfigure}{.5\textwidth}
+          \centering
+          \includegraphics[width=1\linewidth]{p2_s3.png}
+          \caption{}
+          \label{fig:sub1}
+        \end{subfigure}%
+        \begin{subfigure}{.5\textwidth}
+          \centering
+          \includegraphics[width=1\linewidth]{p2_s4.png}
+          \caption{DFT of $f(t)=8$rect$(t)$}
+          \label{fig:sub2}
+        \end{subfigure}
+        \caption{Fourier Transform Pair for $N=216$ and $B=4$}
+        \label{fig:test}
+    \end{figure}
+
+    \item To recover the continuous FFT of $F(\omega)=\frac{sin(\omega)}{\omega}$, $B$ must $\rightarrow \infty$. This can be shown in the next two figures, which showcase a DFT with $N=216\cdot30=6480$ and $B=4\cdot 30=120$ $Hz$, where more frequency content is obtained. Additionally, Figure 2.6 showcases how the magnitude content is much closer to the continuous FFT shown in Figure 2.2.
+
+    \begin{figure}[h]
+        \centering
+        \begin{subfigure}{.5\textwidth}
+          \centering
+          \includegraphics[width=1\linewidth]{p3_s5.png}
+          \caption{Sampled $f(t)=8$rect$(t)$}
+          \label{fig:sub1}
+        \end{subfigure}%
+        \begin{subfigure}{.5\textwidth}
+          \centering
+          \includegraphics[width=1\linewidth]{p2_s6.png}
+          \caption{DFT of $f(t)=8$rect$(t)$, Zoomed Out}
+          \label{fig:sub2}
+        \end{subfigure}
+        \caption{Fourier Transform for $N=6480$ and $B=120$}
+        \label{fig:test}
+    \end{figure}
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=1\linewidth]{p3_s7.png}
+        \caption{DFT of $f(t)=8$rect$(t)$ for $N=6480$ and $B=120$, Zoomed In}
+        \label{fig:enter-label}
+    \end{figure}
+
+\clearpage
+
+\end{enumerate}
+
+\newpage
+
+\section{Project 3}
+\subsection{Introduction}
+
+Consider the three-mass system with the parameters $m_1=m_2=m_3=2$ $kg$, $k_1=k_2=k_3=10$ $\frac{N}{m}$, $c_1=0.05$ $\frac{Ns}{m}$, $c_2=0.07$ $\frac{Ns}{m}$, $c_3=0.04$ $\frac{Ns}{m}$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.65\linewidth]{p3_ff1.png}
+    \caption{Multi-Input Single-Output (MISO) System}
+    \label{fig:enter-label}
+\end{figure}
+
+\subsection{Tasks}
+
+\begin{enumerate}
+    \item Verify that the equations of motion for the three degree-of-freedom system are the following:
+    \\$m_1\ddot{x}_1=k_2x_2-(k_1+k_2)x_1+c_2\dot{x}_2-(c_1+c_2)\dot{x_1}+u_1$, \\$m_2\ddot{x}_2=k_3x_3 -(k_2+k_3)x_2+k_2x_1+c_3\dot{x}_3-(c_2+c_3)\dot{x_2}+c_2\dot{x}_1$, \\ $m_3\ddot{x}_3=-k_3(x_3-x_2)-c_3(x_3-x_2)+u_3$
+
+    \item Consider the displacement $x_3$ is available for measurements. Using random excitations on the inputs $u_1$ and $u_3$, construct the transfer functions from $G_{31}(s)=\frac{x_3(s)}{u_1(s)}$ and $G_{33}(s)=\frac{x_3(s)}{u_3(s)}$ using the discrete Fourier transform method of Problem 1.
+
+    \item Plot the frequency response functions obtained from the method. What can you say about the peaks you see in the magnitude plots. Explain how they are related to the parameters of the system.
+\end{enumerate}
+
+\subsection{Solution}
+
+\begin{enumerate}
+    \item The EOMs for the spring-mass-damper system were derived by hand using Newton's Second law, $\Sigma F_{m_i} = m_i\ddot{x}_i$ (see section 3.4).
+    \item Using a similar methodology as Problem 1, the transfer functions $G_{31}(s)$ and $G_{33}(s)$ were able to be calculated. The functions were modified to use the 6-state and 2-control system, with $A_{6\times6}$ and $B_{6x2}$. Additionally, the output in this case is the displacement of $x_3$, not the acceleration.
+
+    \begin{lstlisting}[style=Matlab-editor]
+m = 2;              % given mass (kg)
+k = 10;             % given k (N/m)
+c1 = 0.05;          % given c1 
+c2 = 0.07;          % given c2 
+c3 = 0.04;          % given c3
+fs = 1;             % chose fs
+
+[Ad, Bd] = discretize(m, k, c1, c2, c3, fs);
+T0 = 0;                     % initial time
+Tf = 1024;                  % final time
+T = T0:1/fs:(Tf - 1/fs);    % values
+
+Np = length(T);
+Ne = Np/2;
+uhist = zeros(2,Np);
+uhist(:,1:Ne) = randn(2,Ne).*hann(Ne).';
+
+[xhist, ahist] = responseDyn(Ad, Bd, T, uhist);
+responsePlot(xhist, uhist, ahist, T);
+
+U1s = fft(uhist(1,:), Np)/Np;
+U3s = fft(uhist(2,:), Np)/Np;
+X3s = fft(xhist(3,:), Np)/Np;
+
+plotDFT(X3s,U1s,U3s,fs,Np);
+
+X3U1 = X3s.*conj(U1s);
+U1U1 = U1s.*conj(U1s);
+G31s = X3U1./U1U1;
+
+X3U3 = X3s.*conj(U3s);
+U3U3 = U3s.*conj(U3s);
+G33s = X3U3./U3U3;
+    \end{lstlisting}
+
+    \item With the calculated transfer functions, they were plotted against frequency, and compared to the natural frequency of the continuous system. 
+
+    \begin{lstlisting}[style=Matlab-editor]
+plotG(G31s, G33s, fs, Np)
+A = [0 0 0 1 0 0;
+     0 0 0 0 1 0;
+     0 0 0 0 0 1;
+    -2*k  k    0 (-c1 - c2) c2          0;
+     k   -2*k  k c2         (-c2 - c3)  c3;
+     0    k   -k 0          c3         -c3];
+A(4:end,:) = A(4:end,:)/m;
+wn = imag(eig(A))/(2*pi);
+    \end{lstlisting}
+\end{enumerate}
+
+\subsection{Results}
+\begin{enumerate}
+    \item The EOMs were derived by hand using Newton's second law.
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=.9\linewidth]{derivation.pdf}
+        \caption{Derivation of the EOMs}
+        \label{fig:enter-label}
+    \end{figure}
+
+    \clearpage
+    
+    \item Using a modified approach from Problem 1, the transfer functions $G_{31}(s)$ and $G_{33}(s)$ were able to be calculated. The random inputs of the control and the output for this problem are plotted below. 
+
+    \begin{figure}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f7.png}
+      \caption{Control 1 vs. Time}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f8.png}
+      \caption{Control 3 vs. Time}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{Input Plots for random $u_1(t)$ and $u_3(t)$}
+    \label{fig:test}
+    \end{figure}
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=.8\linewidth]{p3_f3.png}
+        \caption{Output of $x_3(t)$}
+        \label{fig:enter-label}
+    \end{figure}
+    \newpage
+
+    The DFTs of the input and output were also obtained. Like Problem 1, the control data has a random magnitude frequency content across the frequency spectrum of $0 \rightarrow \omega=1$ $Hz$. The output data has a magnitude spike around the natural frequencies of this spring-mass-damper system, which were calculated to be $w_n=0.641, 0.444, 0.158$ $Hz$. Notice that the $w_n=0.64$ spike does not show up, as the bandwidth is too low to recover that frequency.
+
+    \begin{figure}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f12.png}
+      \caption{DFT of Control 1}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f13.png}
+      \caption{DFT of Control 3}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{DFT of $u_1(t)$ and $u_3(t)$}
+    \label{fig:test}
+    \end{figure}
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=.8\linewidth]{p3_f14.png}
+        \caption{DFT of $x_3(t)$}
+        \label{fig:enter-label}
+    \end{figure}
+    \newpage
+
+    \item With the calculation of the corelation functions, the transfer functions could be calculated and plotted, shown below. Since the frequency content could not be fully obtained with $f_s = 1$ $Hz$, the Problem was re-run with $f_s=2$ $Hz$ such that $B > 0.641 = w_{n_{max}}$ $ Hz$. With this run, all the natural frequencies ($0.641, 0.444, 0.158$) were recovered.
+
+    \begin{figure}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f15.png}
+      \caption{Magnitude of $G_{31}(s)$}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f16.png}
+      \caption{Magnitude of $G_{33}(s)$}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{$G_{31}(s)$ and $G_{33}(s)$ for $f_s=1$ $Hz$}
+    \label{fig:test}
+    \end{figure}
+
+    \begin{figure}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f17.png}
+      \caption{Magnitude of $G_{31}(s)$}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f18.png}
+      \caption{Magnitude of $G_{33}(s)$}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{$G_{31}(s)$ and $G_{33}(s)$ for $f_s=2$ $Hz$}
+    \label{fig:test}
+    \end{figure}
+\end{enumerate}
+\newpage
+\section{Appendix}
+\subsection{Additional Plots for Problem 1}
+
+    \begin{figure}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p1_f1.png}
+      \caption{Position vs. Time}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p1_f2.png}
+      \caption{Velocity vs. Time}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{State Plots for $u(t)=sin(2t)$, $k=1$}
+    \label{fig:test}
+    \end{figure}
+
+        \begin{figure}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p1_f5.png}
+      \caption{Position vs. Time}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p1_f6.png}
+      \caption{Velocity vs. Time}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{State Plots for random $u(t)$, $k=1$}
+    \label{fig:test}
+    \end{figure}
+
+\clearpage
+\subsection{Additional Plots for Problem 3}
+
+    \begin{figure}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f1.png}
+      \caption{Position 1 vs. Time}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f2.png}
+      \caption{Position 2 vs. Time}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{Position 1 and 2 Plots}
+    \label{fig:test}
+    \end{figure}
+
+    \begin{figure}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f4.png}
+      \caption{Velocity 1 vs. Time}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f5.png}
+      \caption{Velocity 2 vs. Time}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{Velocity 1 and 2 Plots}
+    \label{fig:test}
+    \end{figure}
+    
+\clearpage
+
+    \begin{figure}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f9.png}
+      \caption{Acceleration 1 vs. Time}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f10.png}
+      \caption{Acceleration 2 vs. Time}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{Acceleration 1 and 2 Plots}
+    \label{fig:test}
+    \end{figure}
+    
+    \begin{figure}[h]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f6.png}
+      \caption{Velocity 3 vs. Time}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{p3_f11.png}
+      \caption{Acceleration 3 vs. Time}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{Velocity 1 and Acceleration 3 Plots}
+    \label{fig:test}
+    \end{figure}
+
+\subsection{All MATLAB Code}
+
+\includepdf[pages=-]{matlab_code.pdf}
+
+\end{document}

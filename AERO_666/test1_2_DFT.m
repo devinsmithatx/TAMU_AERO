@@ -38,8 +38,8 @@ rectPlot(t, Y, B, Ys);         % plots of sampled f(t) and its DFT
 
 % Trying out a higher resultion just bc
 
-B = 4*30;                          % bandwidth
-N = 216*30;                        % sample count
+B = 4*30*2;                          % bandwidth
+N = 216*30*4;                        % sample count
 
 T = 1/(2*B);                    % sampling frequency (nyquist criteria)
 T0 = N*T;                       % final time 

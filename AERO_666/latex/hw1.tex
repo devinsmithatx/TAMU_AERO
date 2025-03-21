@@ -1,0 +1,323 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{gensymb}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{matlab-prettifier}
+
+\title{Homework 1: \\ Planar Triangulation Problem}
+\author{Devin Smith \\ UIN: 330000494}
+\date{Systems Analysis \\ AERO 666}
+
+\begin{document}
+
+\maketitle
+
+\section{Problem Statement}
+With reference to Figure 1, suppose a surveyor has collected data to estimate the location of a point \textbf{$p$} from imperfect azimuthal measurements. The first measurement base point is adopted as the origin ({$x_1 = y_1 = 0$}). The true coordinates of the point \textbf{$p$} be (4, 4). The azimuthal observations are expressed in Equation 1.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{fig.png}
+    \caption{Planar Triangulation Problem}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{equation}
+    \tilde{\theta_j} = tan^-1(\frac{y - y_j}{x - x_j}) + v_{\theta_j}, j = 1,2,3,4
+\end{equation}
+
+\subsection{Tasks}
+
+\begin{enumerate}
+    \item Generate simulated azimuth measurements using the coordinates $x_2 = 0.25, y_2 = 0.01, x_3 = 0.5, y_3 = -0.1, x_4 = 1, y_4 = 0.1$. Corrupt the true measurements with zero mean Gaussian noise of standard deviation $\sigma_\theta = 0.1$\degree. Use the nonlinear least squares algorithm shown in Figure 2 to estimate the true location of the point.
+    \item Monte Carlo Analysis: Repeat the estimation process with 1000 randomly generated measurements using the observation coordinates of step 1. Plot the converged answer as a spread of about the true value. What do you observe?
+    \item Repeat the process in step 1, but with observation coordinates $x_2 = 1.5, y_2 = 0.00, x_3 = 3, y_3 = -0.1, x_4 = 4, y_4 = 0.1$. Corrupt the true measurements with zero mean Gaussian noise of standard deviation $\sigma_\theta = 0.1$\degree. Use the nonlinear least squares algorithm to estimate the true location of the point.
+    \item Monte Carlo Analysis: Repeat the estimation process with 1000 randomly generated measurements using the observation coordinates of step 3. Plot the converged answer as a spread of about the true value. What do you observe?
+    \item For the second set of observations, implement the corrections that minimize the one-norm of the residual error $\Delta y_c = \tilde{y} - f(x_c)$, that is to say, find the best estimated correction $\Delta x_c$ that minimizes $\left\|\Delta y_c\right\|_1$ at each correction. Use the linear program for each iteration instead of least squares. What differences do you observe between the solution in part 4 and part 5?
+\end{enumerate}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{fig2.png}
+    \caption{Gaussian least squares differential corrections (GLSDC) algorithm}
+    \label{fig:enter-label}
+\end{figure}
+
+\section{Problem Solution}
+\subsection{Coordinate Set 1 GLSDC}
+Given the problem statement, the Gaussian least squares differential corrections algorithm was applied for a single set of corrupted coordinates, with an initial guess of \textbf{$p$} = (3, 3), shown in Figures 3 and 4. 
+\par The GLSDC algorithm was then run with 1000 dispersed corrupted measurements, as shown in Figures 5-7. Here, the spread of the converged answers matches a guassian distribution, as expected. The spread appears as an elongated ellipse, with a large semi-major axis. Since the observation coordinates are spatially close together, there is a significant uncertainty along the direction co-linear with the line from the observation coordinates to the position of the object.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\linewidth]{set1_single_out.png}
+    \caption{GLSDC Set 1, Single Observation, Zoomed Out}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\linewidth]{set1_single_in.png}
+    \caption{GLSDC Set 1, Single Observation, Zoomed In}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\linewidth]{set1_out.png}
+    \caption{GLSDC Set 1, Monte Carlo, Zoomed Out}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\linewidth]{set1_in.png}
+    \caption{GLSDC Set 1, Monte Carlo, Zoomed In}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\linewidth]{set1_spread.png}
+    \caption{GLSDC Set 1, Monte Carlo, Azimuths}
+    \label{fig:enter-label}
+\end{figure}
+
+\clearpage
+
+\subsection{Coordinate Set 2 GLSDC}
+The GLSDC algoritm was run with the second set of observation coordinates, with the same initial guess, as shown in Figures 8 and 9.
+\par The GLSDC algorithm was then run with 1000 dispersed corrupted measurements, as shown in Figures 10-12. Here, the spread of the converged answers again matches a guassian distribution, as expected. The spread appears as a tighter ellipse, with a much smaller semi-major axis. 
+\par Since the observation coordinates are spatially far apart, there is significantly less uncertainty in the position of the object compared to the first set of observation coordinates, as the line from observation coordinate to object position varies more between each observation coordinate.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\linewidth]{set2_single_out.png}
+    \caption{GLSDC Set 2, Single Observation, Zoomed Out}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\linewidth]{set2_single_in.png}
+    \caption{GLSDC Set 2, Single Observation, Zoomed In}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\linewidth]{set2_out.png}
+    \caption{GLSDC Set 2, Monte Carlo, Zoomed Out}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\linewidth]{set2_in.png}
+    \caption{GLSDC Set 2, Monte Carlo, Zoomed In}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\linewidth]{set2_spread.png}
+    \caption{GLSDC Set 2, Monte Carlo, Azimuths}
+    \label{fig:enter-label}
+\end{figure}
+
+\clearpage
+
+\subsection{Coordinate Set 2 Linear Program Monte Carlo}
+The Monte Carlo process for the second set of observation measurements was repeated but with a linear program solver instead of the GLSDC algorithm, shown in Figures 13-15. Here, a much similar spread is observed, however, there is a visible difference between the two algorithms. The GLSDC has a tighter spread, while the Linear Program has a wider spread. Additionally, the linear program algortihm results in much more data points outside of what should be in the three-standard deviation range.
+\par Note that the linear program is minimizing the sum of the absolute value of the errors, while the least squares method is minimizing the sum of the squares of the errors. The smaller spread the GLSDC algorithm is due to the penalization of large errors from squaring their values. In the one-norm minimization, large errors are not penalized as much. If the linear program were to minimize the infinite norm of the error instead, there would be a tighter circle compared to the one-norm solution, as the maximum error from the set of observation measurements is minimized. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\linewidth]{linprog_out.png}
+    \caption{LINPROG Set 2, Monte Carlo, Zoomed Out}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\linewidth]{linprog_in.png}
+    \caption{LINPROG Set 2, Monte Carlo, Zoomed In}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\linewidth]{linprog_spread.png}
+    \caption{LINPROG Set 2, Monte Carlo, Azimuths}
+    \label{fig:enter-label}
+\end{figure}
+
+\clearpage
+
+\section{Summary}
+The problem stated is a planar triangulation problem where an object at a point in space is being located via corrupted azimuth measurements from a set of observation coordinates. 
+\par The Guassian Least Squares Differential Corrections (GLSDC) algorithm was used for the nonlinear estimation problem, where monte carlo analysis was performed for two sets of observation coordinates. The first set of coordinates, which were all close together, resulted in a set of estimations that had a large uncertainty of the position in the direction co-linear with the line from the observation coordinates and the objects position. The second set of coordinates, which were farther apart, provided a much smaller uncertainty in the position of the object.
+\par Additionally, the second set of coordinates was tested using a linear program solver for minimizing the one-norm of the position error. This provided a simular, but wider spread of data compared to the GLSDC algorthm, due to the nature of penalizing large errors in each solver. 
+
+\section{Appendix: MATLAB Code}
+
+\begin{lstlisting}[style=Matlab-editor]
+clear all; close all; clc;
+
+%% PROBLEM SETUP
+
+
+xT = [4; 4];                        % true value
+xj1 = [0.00, 0.25,  0.50, 1.00 ;    % measurement base set 1
+       0.00, 0.01, -0.10, 0.10];
+xj2 = [0.00, 1.50,  3.00, 4.00 ;    % measurement base set 2
+       0.00, 0.00, -0.10, 0.10];
+sig = 0.1*pi/180;                   % measurement standard derivation
+
+
+%% PROBLEM SOLUTION
+
+
+xG = [3; 3]; % initial guess
+
+% GLSDC SET 1
+[xhat1, H1] = monte_carlo(xT, xG, xj1, sig, "GLSDC", 1);
+plot_xhat(xhat1, xT, xj1);
+title("GLSDC Measurement Set 1")
+
+% GLSDC SET 1 (MONTE CARLO)
+[xhat_mc1, H_mc1] = monte_carlo(xT, xG, xj1, sig, "GLSDC", 1000);
+plot_mc(xhat_mc1, xT, xj1, sig, H_mc1);
+title("GLSDC Measurement Set 1 (Monte Carlo)")
+
+% GLSDC SET 2
+[xhat2, H2] = monte_carlo(xT, xG, xj2, sig, "GLSDC", 1);
+plot_xhat(xhat2, xT, xj2);
+title("GLSDC Measurement Set 2")
+
+% GLSDC SET 2 (MONTE CARLO)
+[xhat_mc2, H_mc2] = monte_carlo(xT, xG, xj2, sig, "GLSDC", 1000);
+plot_mc(xhat_mc2, xT, xj2, sig, H_mc2);
+title("GLSDC Measurement Set 2 (Monte Carlo)")
+
+% LINEAR PROGRAM SET 2 (MONTE CARLO)
+[xhat_mc3, H3] = monte_carlo(xT, xG, xj2, sig, "LINPROG", 1000);
+plot_mc(xhat_mc3, xT, xj2, sig, H3);
+title("LINPROG Measurement Set 2 (Monte Carlo)")
+
+
+
+%% FUNCTIONS
+
+
+% Gaussian Least Squares Differential Corrections Model
+function [xhat, H] = GLSDC(xhat, xj, th)
+m = width(xj); tol = 1e-8; ctr = 1;
+xhist(:,1) = xhat; Jhist = 10; 
+H = zeros(m,2); W = 1e2*eye(m);
+for k = 1: 10
+    yhat = atan2(xhat(2,1) - xj(2,:), xhat(1,1) - xj(1,:))';
+    dy = (th - yhat);
+    H(:,1) = -(xhat(2,1) - xj(2,:))./((xhat(2,1) - xj(2,:)).^2 + (xhat(1,1) - xj(1,:)).^2);
+    H(:,2) = (xhat(1,1) - xj(1,:))./((xhat(2,1) - xj(2,:)).^2 + (xhat(1,1) - xj(1,:)).^2);
+    
+    dx = inv(H'*W*H)*H'*W*dy;
+    xhat = xhat + dx;
+    
+    Jhist(ctr+1,1) = dy'*W*dy; xhist(:,ctr+1) = xhat;
+    if(k > 1)
+        if(abs(Jhist(ctr,1)- Jhist(ctr+1,1)) < tol*Jhist(ctr,1))
+            break
+        end
+        ctr = ctr + 1;
+    end
+end
+end
+
+% Linear Program Model
+function [xhat, H] = LINPROG(xhat, xj, th)
+m = width(xj); tol = 1e-8; ctr = 1;
+xhist(:,1) = xhat; Jhist = 10; 
+H = zeros(m,2);
+for k = 1: 10
+    yhat = atan2(xhat(2,1) - xj(2,:), xhat(1,1) - xj(1,:))';
+    dy = (th - yhat);
+    H(:,1) = -(xhat(2,1) - xj(2,:))./((xhat(2,1) - xj(2,:)).^2 + (xhat(1,1) - xj(1,:)).^2);
+    H(:,2) = (xhat(1,1) - xj(1,:))./((xhat(2,1) - xj(2,:)).^2 + (xhat(1,1) - xj(1,:)).^2);
+    
+    f = [zeros(1,2), ones(1,m)];            % J
+    A = [-H, -eye(m,m); H, -eye(m,m)];      % -Hx - s, Hx - s
+    b = [-dy; dy];                          % -y, y
+    lb = [-inf,-inf, zeros(1,m)];           % s > 0
+    options = optimoptions('linprog','Display','off');
+    z = linprog(f,A,b,[],[],lb,[], options);
+    xhat = xhat + z(1:2);
+
+    Jhist(ctr+1,1) = f*z; xhist(:,ctr+1) = xhat;
+    if(k > 1)
+        if(abs(Jhist(ctr,1)- Jhist(ctr+1,1)) < tol*Jhist(ctr,1))
+            break
+        end
+        ctr = ctr + 1;
+    end
+end
+end
+
+% Monte Carlo Simulation
+function [xhat_mc, H] = monte_carlo(xT, xG, xj, sig, algorithm, Nmc)
+thj = atan2(xT(2,1)-xj(2,:), xT(1,1)-xj(1,:))';
+xhat_mc = zeros(2,Nmc);
+m = width(xj);
+for j1 = 1:Nmc
+    thjtil = thj + sig*randn(m,1);
+    if strcmp(algorithm, "GLSDC") 
+        [xhat, H] = GLSDC(xG, xj, thjtil);
+    else
+        [xhat, H] = LINPROG(xG, xj, thjtil);
+    end
+    xhat_mc(:,j1) = xhat;
+end
+end
+
+% Plotting Results of single run
+function plot_xhat(xhat, xT, xj)
+figure
+plot(xhat(1,1), xhat(2,1),'+'); hold on; axis equal;
+plot(xT(1,1), xT(2,1), '*');
+plot(xj(1,:),xj(2,:),'d');
+xlim([0, 12]); ylim([0, 12]);
+legend('Converged Solution', 'True Solution')
+xlabel('$x$', Interpreter='latex'); 
+ylabel('$y$', Interpreter='latex');
+end
+
+% Plotting Results of Monte Carlo
+function plot_mc(xhat_mc, xT, xj, sig, H)
+m = width(xj);
+R = eye(m)*(sig^2); Ri= inv(R);
+P = inv(H'*Ri*H);
+Npts = 50;
+th = linspace(0, 2*pi, Npts);
+[V, D] = eig(P);
+
+xc1(1,1:Npts) = sqrt(D(1,1))*cos(th); xc1(2,1:Npts) = sqrt(D(2,2))*sin(th);
+xc2(1,1:Npts) = 2*sqrt(D(1,1))*cos(th); xc2(2,1:Npts) = 2*sqrt(D(2,2))*sin(th);
+xc3(1,1:Npts) = 3*sqrt(D(1,1))*cos(th); xc3(2,1:Npts) = 3*sqrt(D(2,2))*sin(th);
+xc1 = V*xc1; xc2 = V*xc2; xc3 = V*xc3;
+
+figure
+plot(xc1(1,:)+xT(1,1),xc1(2,:)+xT(2,1),'-b'); hold on; axis equal;
+plot(xc2(1,:)+xT(1,1),xc2(2,:)+xT(2,1),'-g');
+plot(xc3(1,:)+xT(1,1),xc3(2,:)+xT(2,1),'-r');
+plot(xhat_mc(1,:), xhat_mc(2,:),'+');
+plot(xT(1,1), xT(2,1), '*');
+plot(xj(1,:),xj(2,:),'d');
+xlim([0, 12]); ylim([0, 12]);
+legend('1 \sigma', '2 \sigma', '3 \sigma', 'Converged Solution', 'True Solution')
+xlabel('$x$', Interpreter='latex'); 
+ylabel('$y$', Interpreter='latex');
+end
+\end{lstlisting}
+
+\end{document}
