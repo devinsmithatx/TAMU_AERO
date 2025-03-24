@@ -47,7 +47,6 @@ M.Output = [z;Wr*r-ym];
 
 %M.Output = [z;Wr*r;ym];
 
-
 G = ss(M.System);
 Gm = minreal(G);
 
