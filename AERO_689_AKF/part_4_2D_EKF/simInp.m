@@ -19,21 +19,16 @@ inp.Qs = inp.qs*diag([0 0 1 1 0 0 0 0]);
 
 % measurement noise characteristics
 inp.R = 4;
-inp.ts = 1/2;
+inp.tm = 1/2;
 
 % nominal values of non-linear states
 inp.bar = [2; 150; 1.225; 9200];
 
+% simulation parameters
+inp.ts = 0.1;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Simulation
 
-[t, x] = ode45(@(t,y) dynamics(t, y, inp), [0 15], inp.x0);
-
-figure; plot(t, x(:,1))
-figure; plot(t, x(:,2))
-figure; plot(t, x(:,3))
-figure; plot(t, x(:,4))
-% figure; plot(t, x(:,5))
-% figure; plot(t, x(:,6))
-% figure; plot(t, x(:,7))
-% figure; plot(t, x(:,8))
+% run the sim
+simRun(inp);
