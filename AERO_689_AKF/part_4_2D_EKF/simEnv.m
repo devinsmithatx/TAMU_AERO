@@ -3,12 +3,20 @@ function [state, measurement, i] = simEnv(inp, state, measurement, i)
 % update timestep 
 t = i*inp.ts;
 
+% sim the process noise
+% F = solveFdouble(inp.F, state.x);
+% dQ = F*state.Q + state.Q*(F.') + inp.Qs;
+% state.Q = state.Q + dQ.*inp.ts;
+w = [ 0; 0; 0.1*randn(2,1); 0; 0; 0; 0];
+
 % sim the dynamics
-[~, x] = ode45(@(t,y) odeDynamics(t, y, inp), [0 inp.ts], state.x);
+[~, x] = ode45(@(t,y) odeDynamics(t, y, inp, w), [0 inp.ts], state.x);
 
 % store the dynamics data
 state.x = x(end,:)';
 state.t = t;
+state.w = w;
+
 
 % sim the measurement
 if rem(i,inp.tm/inp.ts) == 0

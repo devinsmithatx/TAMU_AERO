@@ -17,7 +17,7 @@ while state.falling
 
     % store time history data
     if rem(i,inp.tm/inp.ts) == 0
-        measurement_hist = [measurement_hist measurement];
+    measurement_hist = [measurement_hist measurement];
     end
     state_hist = [state_hist state];
     i = i + 1;

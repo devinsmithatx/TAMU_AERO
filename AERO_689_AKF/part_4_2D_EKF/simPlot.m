@@ -41,8 +41,8 @@ xlabel("$t$ (s)", Interpreter="latex");
 ylabel("$v$ (m/s)", Interpreter="latex");
 
 % PLOT Trajectory
-figure; plot(x_hist(1,:), x_hist(2,:), 'k');
-title("$Trajectory$", Interpreter="latex"); 
+figure; plot(x_hist(1,:), x_hist(2,:), 'k'); ylim([0 x_hist(2,1)])
+title("Object Trajectory", Interpreter="latex"); 
 xlabel("$x$ (m)", Interpreter="latex"); 
 ylabel("$y$ (m)", Interpreter="latex");
 
@@ -50,13 +50,13 @@ ylabel("$y$ (m)", Interpreter="latex");
 %% Plotting Measurement Data
 
 % PLOT range
-figure; plot(tk_hist, y_hist(1,:), 'kx'); xlim(t_bounds);
+figure; plot(tk_hist, y_hist(1,:), 'x'); xlim(t_bounds);
 title("$r_k$", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$r$ (m)", Interpreter="latex");
 
 % PLOT measurement noise
-figure; plot(tk_hist, nu_hist(1,:), 'kx'); xlim(t_bounds); hold on;
+figure; plot(tk_hist, nu_hist(1,:), 'x'); xlim(t_bounds); hold on;
 plot(tk_hist, 0*tk_hist, 'k-');
 plot(tk_hist, sqrt(inp.R)*ones(length(tk_hist)), 'k--');
 plot(tk_hist, -sqrt(inp.R)*ones(length(tk_hist)), 'k--');
