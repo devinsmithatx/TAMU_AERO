@@ -1,6 +1,5 @@
 function estimate = simEKF(inp, measurement, estimate)
 
-
 % initial estimates and mesurement
 x = estimate.x_post;
 P = estimate.P_post;
@@ -13,7 +12,10 @@ H = numericJ(inp.H, x);
 % propigate the dynamics
 [~, x] = ode45(@(t, y) odeDynamics(t, y, inp, 0), [0 inp.tm], x);
 x_prior = reshape(x(end,:), 8, 1);
-h_prior = sqrt(x_prior(1)^2 + (x_prior(2) - (inp.bar(1) + x_prior(5)))^2);
+
+% propigated measurement
+radar_height = inp.bar(1) + x_prior(5);
+h_prior = sqrt(x_prior(1)^2 + (x_prior(2) - radar_height)^2);
 
 % propigate the covariance
 P0 = eye(8);
