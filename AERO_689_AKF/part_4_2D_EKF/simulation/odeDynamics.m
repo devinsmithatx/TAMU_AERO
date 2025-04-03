@@ -22,7 +22,7 @@ drag_y = -drag*sin(theta);
 % get derivatives of each state
 drx = vx;
 dry = vy;
-dvx = drag_x/inp.m + w(1);
+dvx = drag_x/inp.m;
 dvy = drag_y/inp.m - inp.g;
 
 % output derivatives of states
