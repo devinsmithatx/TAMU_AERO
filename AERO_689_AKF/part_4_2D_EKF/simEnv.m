@@ -17,7 +17,6 @@ state.x = x(end,:)';
 state.t = t;
 state.w = w;
 
-
 % sim the measurement
 if rem(i,inp.tm/inp.ts) == 0
     y = sqrt(state.x(1)^2 + (state.x(2) - inp.bar(1) - inp.x0(5))^2);
@@ -29,9 +28,10 @@ if rem(i,inp.tm/inp.ts) == 0
     measurement.nu = nu;
 end
 
-% check if falling
-if state.x(2) <= 0
+% check if falling or if time has run on too long
+if state.x(2) <= 0 || t > 100
     state.falling = 0;
 end
+
 end
 
