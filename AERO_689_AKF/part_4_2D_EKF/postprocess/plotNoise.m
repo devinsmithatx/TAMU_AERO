@@ -11,8 +11,32 @@ t_bounds = [t_hist(1) t_hist(end)];
 
 % pull evironment data
 w_hist = [state_hist.w];
+Q_hist = [state_hist.Q];
 y_hist = [measurement_hist.y];
 v_hist = [measurement_hist.v];
+
+
+S_hist = [sqrt(Q_hist(1,1));
+          sqrt(Q_hist(2,2));
+          sqrt(Q_hist(3,3));
+          sqrt(Q_hist(4,4));
+          sqrt(Q_hist(5,5));
+          sqrt(Q_hist(6,6));
+          sqrt(Q_hist(7,7));
+          sqrt(Q_hist(8,8));];
+
+for i = 1:(length(t_hist) - 1)
+    S = [sqrt(Q_hist(1,1 + i*8));
+         sqrt(Q_hist(2,2 + i*8));
+         sqrt(Q_hist(3,3 + i*8));
+         sqrt(Q_hist(4,4 + i*8));
+         sqrt(Q_hist(5,5 + i*8));
+         sqrt(Q_hist(6,6 + i*8));
+         sqrt(Q_hist(7,7 + i*8));
+         sqrt(Q_hist(8,8 + i*8));];
+
+        S_hist = [S_hist S];
+end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -21,8 +45,8 @@ v_hist = [measurement_hist.v];
 % PLOT process noise 1
 figure; plot(t_hist, w_hist(3,:)); xlim(t_bounds); hold on;
 plot(t_hist, 0*t_hist, 'k-');
-plot(t_hist, sqrt(inp.qs)*ones(length(t_hist)), 'k--');
-plot(t_hist, -sqrt(inp.qs)*ones(length(t_hist)), 'k--');
+plot(t_hist, S_hist(3,:), 'k--');
+plot(t_hist, -S_hist(3,:),'k--');
 title("$\omega_x$", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$\omega$ $(m/s^2)$", Interpreter="latex");
@@ -30,8 +54,8 @@ ylabel("$\omega$ $(m/s^2)$", Interpreter="latex");
 % PLOT process noise 2
 figure; plot(t_hist, w_hist(4,:)); xlim(t_bounds); hold on;
 plot(t_hist, 0*t_hist, 'k--');
-plot(t_hist, sqrt(inp.qs)*ones(length(t_hist)), 'k-');
-plot(t_hist, -sqrt(inp.qs)*ones(length(t_hist)), 'k-');
+plot(t_hist, S_hist(4,:), 'k--');
+plot(t_hist, -S_hist(4,:),'k--');
 title("$\omega_y$", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$\omega$ $(m/s^2)$", Interpreter="latex");

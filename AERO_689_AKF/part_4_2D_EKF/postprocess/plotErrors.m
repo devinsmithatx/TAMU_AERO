@@ -154,6 +154,6 @@ plot(th_hist, S_hist(8,:), 'k');
 plot(th_hist, -S_hist(8,:), 'k');
 title("$\Delta k_p$ Error", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
-ylabel("$k_p$ $(m^{-1})$", Interpreter="latex");
+ylabel("$k_p$ (m)", Interpreter="latex");
 end
 

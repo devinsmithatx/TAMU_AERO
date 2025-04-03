@@ -18,8 +18,7 @@ radar_height = inp.bar(1) + x_prior(5);
 h_prior = sqrt(x_prior(1)^2 + (x_prior(2) - radar_height)^2);
 
 % propigate the covariance
-P0 = eye(8);
-[~, P] = ode45(@(t, y) odeP(t, y, inp, F), [0 inp.tm], P0(:));
+[~, P] = ode45(@(t, y) odeP(t, y, inp, F), [0 inp.tm], inp.P0(:));
 P_prior = reshape(P(end,:), 8, 8);
 
 % update

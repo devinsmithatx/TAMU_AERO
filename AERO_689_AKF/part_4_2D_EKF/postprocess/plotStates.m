@@ -87,7 +87,7 @@ figure; plot(t_hist, x_hist(8,:), 'k'); xlim(t_bounds); hold on;
 plot(th_hist, xh_hist(8,:), 'r-');
 title("$\Delta k_p$", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
-ylabel("$k_p$ $(m^{-1})$", Interpreter="latex");
+ylabel("$k_p$ (m)", Interpreter="latex");
 
 % PLOT Trajectory
 figure; plot(x_hist(1,:), x_hist(2,:), 'k'); hold on; ylim([0 x_hist(2,1)])
