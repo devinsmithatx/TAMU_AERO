@@ -15,7 +15,10 @@ Q_hist = [state_hist.Q];
 y_hist = [measurement_hist.y];
 v_hist = [measurement_hist.v];
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Process State Data
 
+% get process noise standard deviations
 S_hist = [sqrt(Q_hist(1,1));
           sqrt(Q_hist(2,2));
           sqrt(Q_hist(3,3));
@@ -43,34 +46,43 @@ end
 %% Plotting Noise & Measurement Data
 
 % PLOT process noise 1
-figure; plot(t_hist, w_hist(3,:)); xlim(t_bounds); hold on;
+figure; 
+line1 = plot(t_hist, w_hist(3,:),'b', DisplayName="$\omega$"); hold on;
 plot(t_hist, 0*t_hist, 'k-');
-plot(t_hist, S_hist(3,:), 'k--');
+line2 = plot(t_hist, S_hist(3,:), 'k--', DisplayName="$\sigma$");
 plot(t_hist, -S_hist(3,:),'k--');
+xlim(t_bounds);
+legend([line1 line2], Interpreter="latex", Location="best");
 title("$\omega_x$", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$\omega$ $(m/s^2)$", Interpreter="latex");
 
 % PLOT process noise 2
-figure; plot(t_hist, w_hist(4,:)); xlim(t_bounds); hold on;
-plot(t_hist, 0*t_hist, 'k--');
-plot(t_hist, S_hist(4,:), 'k--');
-plot(t_hist, -S_hist(4,:),'k--');
+figure; 
+line1 = plot(t_hist, w_hist(4,:), 'b', DisplayName="$\omega$"); hold on;
+plot(t_hist, 0*t_hist, 'k-');
+line2 = plot(t_hist, S_hist(4,:), 'k--', DisplayName="$\sigma$");
+plot(t_hist, -S_hist(3,:),'k--');
+xlim(t_bounds);
+legend([line1 line2], Interpreter="latex", Location="best")
 title("$\omega_y$", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$\omega$ $(m/s^2)$", Interpreter="latex");
 
 % PLOT measurement noise
-figure; plot(tk_hist, v_hist(1,:), 'x'); xlim(t_bounds); hold on;
-plot(tk_hist, 0*tk_hist, 'k--');
-plot(tk_hist, sqrt(inp.R)*ones(length(tk_hist)), 'k-');
-plot(tk_hist, -sqrt(inp.R)*ones(length(tk_hist)), 'k-');
+figure; 
+line1 = plot(tk_hist, v_hist, 'bx', DisplayName="$\nu$"); hold on;
+plot(tk_hist, 0*tk_hist, 'k-');
+line2 = plot(tk_hist, sqrt(inp.R)*ones(length(tk_hist),1), 'k--', DisplayName="$\sigma$");
+plot(tk_hist, -sqrt(inp.R)*ones(length(tk_hist),1),'k--');
+xlim(t_bounds);
+legend([line1 line2], Interpreter="latex", Location="best")
 title("$\nu_k$", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$\nu$ (m)", Interpreter="latex");
 
 % PLOT range
-figure; plot(tk_hist, y_hist(1,:), 'x'); xlim(t_bounds);
+figure; plot(tk_hist, y_hist(1,:), 'bx'); xlim(t_bounds);
 title("$r_k$", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$r$ (m)", Interpreter="latex");

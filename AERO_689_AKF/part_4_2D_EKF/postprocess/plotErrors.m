@@ -92,66 +92,98 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plotting Error Data
 
-figure; plot(th_hist, e_hist(1,:)); xlim(t_bounds); hold on;
+% PLOT r_x
+figure; 
+line1 = plot(th_hist, e_hist(1,:), 'b',DisplayName="$e$"); hold on;
 plot(th_hist, th_hist*0, 'k--');
-plot(th_hist, S_hist(1,:), 'k');
+line2 = plot(th_hist, S_hist(1,:), 'k', DisplayName="$\sigma$");
 plot(th_hist, -S_hist(1,:), 'k');
+xlim(t_bounds);
+legend([line1 line2], Interpreter="latex", Location="best")
 title("$r_x$ Error", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$r$ (m)", Interpreter="latex");
 
-figure; plot(th_hist, e_hist(2,:)); xlim(t_bounds); hold on;
+% PLOT r_y
+figure; 
+line1 = plot(th_hist, e_hist(2,:),'b', DisplayName="$e$"); hold on;
 plot(th_hist, th_hist*0, 'k--');
-plot(th_hist, S_hist(2,:), 'k');
+line2 = plot(th_hist, S_hist(2,:), 'k', DisplayName="$\sigma$");
 plot(th_hist, -S_hist(2,:), 'k');
+xlim(t_bounds);
+legend([line1 line2], Interpreter="latex", Location="best")
 title("$r_y$ Error", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$r$ (m)", Interpreter="latex");
 
-figure; plot(th_hist, e_hist(3,:)); xlim(t_bounds); hold on;
+% PLOT v_x
+figure; 
+line1 = plot(th_hist, e_hist(3,:),'b', DisplayName="$e$"); hold on;
 plot(th_hist, th_hist*0, 'k--');
-plot(th_hist, S_hist(3,:), 'k');
+line2 = plot(th_hist, S_hist(3,:), 'k', DisplayName="$\sigma$");
 plot(th_hist, -S_hist(3,:), 'k');
+xlim(t_bounds);
+legend([line1 line2], Interpreter="latex", Location="best")
 title("$v_x$ Error", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$v$ (m/s)", Interpreter="latex");
 
-figure; plot(th_hist, e_hist(4,:)); xlim(t_bounds); hold on;
+% PLOT v_y
+figure; 
+line1 = plot(th_hist, e_hist(4,:),'b', DisplayName="$e$"); hold on;
 plot(th_hist, th_hist*0, 'k--');
-plot(th_hist, S_hist(4,:), 'k');
-plot(th_hist, -S_hist(4,:), 'k');
+line2 = plot(th_hist, S_hist(1,:), 'k', DisplayName="$\sigma$");
+plot(th_hist, -S_hist(1,:), 'k');
+xlim(t_bounds);
+legend([line1 line2], Interpreter="latex", Location="best")
 title("$v_y$ Error", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$v$ (m/s)", Interpreter="latex");
 
-figure; plot(th_hist, e_hist(5,:)); xlim(t_bounds); hold on;
+% PLOT delta h
+figure; 
+line1 = plot(th_hist, e_hist(5,:),'b', DisplayName="$e$"); hold on;
 plot(th_hist, th_hist*0, 'k--');
-plot(th_hist, S_hist(5,:), 'k');
+line2 = plot(th_hist, S_hist(5,:), 'k', DisplayName="$\sigma$");
 plot(th_hist, -S_hist(5,:), 'k');
+xlim(t_bounds);
+legend([line1 line2], Interpreter="latex", Location="best")
 title("$\Delta h$ Error", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$h$ (m)", Interpreter="latex");
 
-figure; plot(th_hist, e_hist(6,:)); xlim(t_bounds); hold on;
+% PLOT delta beta
+figure; 
+line1 = plot(th_hist, e_hist(6,:),'b', DisplayName="$e$"); hold on;
 plot(th_hist, th_hist*0, 'k--');
-plot(th_hist, S_hist(6,:), 'k');
+line2 = plot(th_hist, S_hist(6,:), 'k', DisplayName="$\sigma$");
 plot(th_hist, -S_hist(6,:), 'k');
-title("$\Delta \rho_0$ Error", Interpreter="latex"); 
-xlabel("$t$ (s)", Interpreter="latex"); 
-ylabel("$\rho$ $(kg/m^3)$", Interpreter="latex");
-
-figure; plot(th_hist, e_hist(7,:)); xlim(t_bounds); hold on;
-plot(th_hist, th_hist*0, 'k--');
-plot(th_hist, S_hist(7,:), 'k');
-plot(th_hist, -S_hist(7,:), 'k');
+xlim(t_bounds);
+legend([line1 line2], Interpreter="latex", Location="best")
 title("$\Delta \beta$ Error", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$\beta$", Interpreter="latex");
 
-figure; plot(th_hist, e_hist(8,:)); xlim(t_bounds); hold on;
+% PLOT delta rho0
+figure; 
+line1 = plot(th_hist, e_hist(7,:),'b', DisplayName="$e$"); hold on;
 plot(th_hist, th_hist*0, 'k--');
-plot(th_hist, S_hist(8,:), 'k');
+line2 = plot(th_hist, S_hist(7,:), 'k', DisplayName="$\sigma$");
+plot(th_hist, -S_hist(7,:), 'k');
+xlim(t_bounds);
+legend([line1 line2], Interpreter="latex", Location="best")
+title("$\Delta \rho_0$ Error", Interpreter="latex"); 
+xlabel("$t$ (s)", Interpreter="latex"); 
+ylabel("$\rho$ $(kg/m^3)$", Interpreter="latex");
+
+% PLOT delta k_p
+figure; 
+line1 = plot(th_hist, e_hist(8,:),'b', DisplayName="$e$"); hold on;
+plot(th_hist, th_hist*0, 'k--');
+line2 = plot(th_hist, S_hist(8,:), 'k', DisplayName="$\sigma$");
 plot(th_hist, -S_hist(8,:), 'k');
+xlim(t_bounds);
+legend([line1 line2], Interpreter="latex", Location="best")
 title("$\Delta k_p$ Error", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$k_p$ (m)", Interpreter="latex");
