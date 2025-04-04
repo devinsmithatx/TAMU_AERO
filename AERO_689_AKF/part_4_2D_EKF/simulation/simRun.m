@@ -1,16 +1,18 @@
 function simRun(inp)
 
-% set the seed
-rng(inp.seed)
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Initialization
+
+% set sim paramenters
+rng(inp.seed)
+i_max = inp.tf/inp.ts;
+i_measure = inp.tm/inp.ts;
 
 % derive the symbolic jacobian matrices
 inp.F = symbolicF(inp);
 inp.H = symbolicH(inp);
 
-% initialize states, measurements, and t
+% initialize state, measurement, and estimate
 state = initialState(inp);
 measurement = initialMeasurement(inp, state);
 estimate = initialEstimate(inp, measurement);
@@ -23,21 +25,22 @@ estimate_hist = estimate;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Simulation
 
-i = 1; % track time steps
-while state.falling 
+i = 1; % track time step
+while state.falling && i <= i_max
 
     % simulate environment
-    [state, measurement, i] = simEnv(inp, state, measurement, i);
+    [state, measurement] = simEnv(inp, state, measurement, i);
 
     % check for next measurement
-    if rem(i,inp.tm/inp.ts) == 0
+    if rem(i, i_measure) == 0
 
-    % simulate extended kalman filter
-    estimate = simEKF(inp, measurement, estimate);
+        % simulate extended kalman filter
+        estimate = simEKF(inp, measurement, estimate);
 
-    % store time history data
-    measurement_hist = [measurement_hist measurement];
-    estimate_hist = [estimate_hist estimate]; end
+        % store time history data
+        measurement_hist = [measurement_hist measurement];
+        estimate_hist = [estimate_hist estimate];
+    end
     state_hist = [state_hist state];
 
     i = i + 1; % increment time step

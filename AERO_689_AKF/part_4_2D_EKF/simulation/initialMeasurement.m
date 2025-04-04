@@ -1,11 +1,11 @@
 function measurement = initialMeasurement(inp, state)
 
-% initialize the measurement
-h = sqrt(state.x(1)^2 + (state.x(2) - (inp.bar(1) + inp.x0(5)))^2);
+% get measurement and noise
+y = measure(inp, state.x);
 v = randn*sqrt(inp.R);
 
 % store the data
-measurement.y = h + v;
+measurement.y = y + v;
 measurement.v = v;
 measurement.t = 0;
 

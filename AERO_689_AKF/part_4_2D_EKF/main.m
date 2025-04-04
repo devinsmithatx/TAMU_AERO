@@ -1,38 +1,59 @@
 %% Falling Object Estimation Sim
 clear; clc; close all;
-addpath("initialization\");
+addpath("jacobians\");
+addpath("ode\");
+addpath("plotting\");
 addpath("simulation\");
-addpath("postprocess\");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% User Inputs
 
-% mass and gravity
-inp.g = 9.8066;
-inp.m = 1;
+% Initial State
+inp.x0 = [ 100.00; 
+          1000.00; 
+            -2.00; 
+           -10.00; 
+            -0.04; 
+             8.80; 
+            -0.10; 
+           740.00];
 
-% initial state truths
-inp.x0 = [100; 1000; -2; -10; -.04; 8.8; -.1; 740];
+% Initial State Estimate
+inp.xh0 = [  97.90; 
+           1037.40; 
+             -0.24; 
+             -3.50; 
+              0.00; 
+              0.00; 
+              0.00; 
+              0.00];
 
-% nominal values of uncertain states
-inp.bar = [2; 150; 1.225; 9200];
+% Nominal Values for Uncertain Constants/States
+inp.bar = [   2.000; 
+            150.000;
+              1.225; 
+           9200.000];
 
-% initial state estimation guesses
-inp.xh0 = [97.9; 1037.4; -.24; -3.5; 0; 0; 0; 0];
+% Initial Error Covariance Estimate
 inp.P0 = diag([10 1000 0.1 10 0.04 225 0.015 846400]);
 
-% process noise characteristics
-inp.qs = 1;
-inp.Qs = inp.qs*diag([0 0 1 1 0 0 0 0]);
+% Process Noise Spectral Density
+inp.Qs = diag([0 0 1 1 0 0 0 0]);
 
-% measurement noise characteristics
+% Measurement Noise Variance
 inp.R = 4;
-inp.tm = 1/2;
 
-% simulation parameters
-inp.ts = 0.1;
-inp.tf = 30;
-inp.seed = 0;
+% Mass & Gravity
+inp.m = 1;
+inp.g = 9.8066;
+
+% Time Parameters
+inp.tm = 1/2;       % measurement sampling period
+inp.ts = 0.1;       % simulation time step
+inp.tf = 30;        % simulation max time
+
+% Random Number Seed
+inp.seed = 22;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Simulation

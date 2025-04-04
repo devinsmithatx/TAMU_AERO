@@ -1,8 +1,8 @@
-function estimate = simEKF(inp, measurement, estimate)
+function estimate = initialEstimate(inp, measurement)
 
 % initial estimates and mesurement
-xh = estimate.x_post;
-Ph = estimate.P_post;
+xh = inp.xh0;
+Ph = inp.P0;
 y = measurement.y;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -16,7 +16,7 @@ F = numericJ(inp.F, xh);
 x_prior = reshape(x(end,:), 8, 1);
 
 %% propigate the covariance | ALGORITHM 1
-P0 = inp.P0(:);
+P0 = Ph;
 [~, P] = ode45(@(t, y) odeP(t, y, inp, F), [0 inp.tm], P0(:));
 P_prior = reshape(P(end,:), 8, 8);
 
