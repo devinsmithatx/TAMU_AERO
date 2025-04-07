@@ -15,7 +15,7 @@ m         = inp.m;
 g         = inp.g;
 
 % aerodynamic parameters
-B    = B_bar + Delta_B;
+B    = B_bar   + Delta_B;
 p_0  = p_0_bar + Delta_p_0;
 k_p  = k_p_bar + Delta_k_p;
 
@@ -23,13 +23,13 @@ k_p  = k_p_bar + Delta_k_p;
 p = p_0*exp(-r_y/k_p);
 
 % drag force magnitude
-d = p*(v_x^2 + v_y^2)/(2*B);
+v = sqrt(v_x^2 + v_y^2);
+d = p*(v^2)/(2*B);
 
-% drag components
-theta =  atan2(v_y, v_x);       
-d_x = -d*cos(theta);
-d_y = -d*sin(theta);
-    
+% drag components   
+d_x = -d*v_x/v;
+d_y = -d*v_y/v;
+   
 % derivatives of states
 dx = [v_x; 
       v_y; 

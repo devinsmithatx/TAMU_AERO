@@ -11,7 +11,7 @@ function F = symbolicF(inp)
     k_p_bar = inp.bar(4);
 
     % aerodynamic parameters
-    B = B_bar + Delta_B;
+    B    = B_bar   + Delta_B;
     p_0  = p_0_bar + Delta_p_0;
     k_p  = k_p_bar + Delta_k_p;
 
@@ -19,12 +19,12 @@ function F = symbolicF(inp)
     p = p_0*exp(-r_y/k_p);
 
     % drag force magnitude
-    d = p*(v_x^2 + v_y^2)/(2*B);
-
-    % drag components
-    theta =  atan2(v_y, v_x);       
-    d_x = -d*cos(theta);
-    d_y = -d*sin(theta);
+    v = sqrt(v_x^2 + v_y^2);
+    d = p*(v^2)/(2*B);
+    
+    % drag components   
+    d_x = -d*(v_x/v);
+    d_y = -d*(v_y/v);
     
     % state vector
     x = [r_x; 

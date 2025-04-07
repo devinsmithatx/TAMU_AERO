@@ -11,13 +11,13 @@ i_measure = inp.tm/inp.ts;
 F = numericJ(inp.F, state.x);
 
 % propigate the Q martix
-Q0 = zeros(8,8);
+Q0 = state.Q;
 [~, Q] = ode45(@(t, y) odeQ(t, y, inp, F), [0 inp.ts], Q0(:));
 Q = reshape(Q(end,:), 8, 8);
 
 % sample process noise
 w = [chol(Q(1:4, 1:4))]*randn(4,1); 
-w = [0;0; w(3:4); zeros(4,1)];
+w = [0*w(1:2); w(3:4); zeros(4,1)];
 
 % propigate the dynamics
 x0 = state.x;
@@ -54,6 +54,7 @@ end
 state.x = x;
 state.Q = Q;
 state.w = w;
+state.F = F;
 state.t = t;
 end
 

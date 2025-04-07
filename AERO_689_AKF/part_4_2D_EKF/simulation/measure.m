@@ -8,5 +8,5 @@ h_bar   = inp.bar(1);
 
 % get the measurement
 h = h_bar + Delta_h;
-y = sqrt(r_x^2 + (r_y - h)^2 );
+y = sqrt( r_x^2 + (r_y - h)^2 );
 end
