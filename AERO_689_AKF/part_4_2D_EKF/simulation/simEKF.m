@@ -1,55 +1,61 @@
-function estimate = simEKF(inp, measurement, estimate)
+function estimate = simEKF(inp, measurement, estimate, i)
+
+% get time stuff
+i_measure = inp.tm/inp.ts;
 
 % initial estimates and mesurement
 y = measurement.y;
-xh = estimate.x_post;
-P0 = estimate.P_post;
-Q0 = estimate.Q;
-Phi0 = estimate.Phi;
+x = estimate.x_post;
+P = estimate.P_post;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Propigate
 
-% evaluate the jacobian
-F = numericJ(inp.F, xh);
-
 % propigate the dynamics
-x0 = xh;
-[~, x] = ode45(@(t, y) odeDynamics(t, y, inp, 0), [0 inp.tm], x0);
-x_prior = reshape(x(end,:), 8, 1);
+dx = xDynamics(inp, x, 0);
+x_prior = dx*inp.ts + x;
 
 % propigate the covariance
 if strcmp(inp.method, '1')
     % ALGORITHM 1
-    [~, P] = ode45(@(t, y) odeP(t, y, inp, F), [0 inp.tm], P0(:));
-    P_prior = reshape(P(end,:), 8, 8);
+    F = jacobianF(inp, x);
 
-    Q = P0; Phi = Phi0; % unused, just passed through
+    dP = F*P + P*F.' + inp.Qs;
+    P_prior = dP.*inp.ts + P;
 else
     % ALGORITHM 2
-    [~, Q] = ode45(@(t, y) odeQ(t, y, inp, F), [0 inp.ts], Q0(:));
-    Q = reshape(Q(end,:), 8, 8);
+    Q = zeros(8);
+    Phi = eye(8);
+    F = jacobianF(inp, x);
+
+    dQ = F*Q + Q*F.' + inp.Qs;
+    Q = dQ.*inp.ts + Q;
     
-    [~, Phi] = ode45(@(t, y) odePhi(t, y, F), [0 inp.ts], Phi0(:));
-    Phi = reshape(Phi(end,:), 8, 8);
+    dPhi = F*Phi;
+    Phi = dPhi.*inp.ts + Phi;
     
-    P_prior = Phi*P0*(Phi.') + Q;
+    P_prior = Phi*P*Phi.' + Q;
 end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Update
 
-% propigated measurement
-y_prior = measure(inp, x_prior);
-
-% evaluate the jacobian
-H = numericJ(inp.H, x_prior);
-
-% update
-K = (P_prior * H.') * (H * P_prior * H.' + inp.R)^(-1);
-x_post = x_prior + K*(y - y_prior);
-P_post = (eye(8) - K*H)*P_prior;
+if rem(i, i_measure) == 0
+    % propigated measurement
+    y_prior = xMeasure(inp, x_prior);
+    H = jacobianH(inp, x_prior);
+    
+    % update
+    K = (P_prior * H.') * (H * P_prior * H.' + inp.R)^(-1);
+    x_post = x_prior + K*(y - y_prior);
+    P_post = (eye(8) - K*H)*P_prior;
+else
+    % no update
+    K = estimate.K;
+    x_post = x_prior;
+    P_post = P_prior;
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Outputs
@@ -60,10 +66,5 @@ estimate.P_prior = P_prior;
 estimate.x_post = x_post;
 estimate.P_post = P_post;
 estimate.K = K;
-estimate.t = measurement.t;
-estimate.Q = Q;
-estimate.Phi = Phi;
-estimate.F = F;
-estimate.H = H;
 end
 

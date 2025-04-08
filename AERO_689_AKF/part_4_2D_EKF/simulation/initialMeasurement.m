@@ -1,7 +1,7 @@
 function measurement = initialMeasurement(inp, state)
 
 % get measurement and noise
-y = measure(inp, state.x);
+y = xMeasure(inp, state.x);
 v = randn*sqrt(inp.R);
 
 % store the data

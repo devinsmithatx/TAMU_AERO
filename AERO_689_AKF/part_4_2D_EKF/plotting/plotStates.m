@@ -1,10 +1,9 @@
-function plotStates(inp, state_hist, measurement_hist, estimate_hist)
+function plotStates(inp, state_hist, estimate_hist)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Parse time history data
 
 % pull time data
 t_hist = [state_hist.t];
-tk_hist = [measurement_hist.t];
 
 % t-axis bounds for plots
 t_bounds = [t_hist(1) t_hist(end)];
@@ -20,13 +19,13 @@ xpost_hist = [estimate_hist.x_post];
 %% Process Estimation Data
 
 % zip together the apriori and aposteriori measurements
-xh_hist = zeros(8,length(tk_hist)*2);
-th_hist = zeros(1,length(tk_hist)*2);
-for i = 1:length(tk_hist)
+xh_hist = zeros(8,length(t_hist)*2);
+th_hist = zeros(1,length(t_hist)*2);
+for i = 1:length(t_hist)
     xh_hist(:,2*i - 1) = xprior_hist(:,i);
     xh_hist(:,2*i) = xpost_hist(:,i);
-    th_hist(:,2*i - 1) = tk_hist(:,i);
-    th_hist(:,2*i) = tk_hist(:,i);
+    th_hist(:,2*i - 1) = t_hist(:,i);
+    th_hist(:,2*i) = t_hist(:,i);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

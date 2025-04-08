@@ -4,28 +4,28 @@ function [state, measurement] = simEnv(inp, state, measurement, i)
 t = i*inp.ts;
 i_measure = inp.tm/inp.ts;
 
+% pull previous timestep stuff
+Q = state.Q;
+x = state.x;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Dynamics 
 
-% evaluate jacobian
-F = numericJ(inp.F, state.x);
-
 % propigate the Q martix
-Q0 = state.Q;
-[~, Q] = ode45(@(t, y) odeQ(t, y, inp, F), [0 inp.ts], Q0(:));
-Q = reshape(Q(end,:), 8, 8);
+F = jacobianF(inp, x);
+Q = zeros(8);
+dQ = F*Q + Q*F.' + inp.Qs;
+Q = dQ.*inp.ts + Q;
 
 % sample process noise
-w = [chol(Q(1:4, 1:4))]*randn(4,1); 
-w = [0*w(1:2); w(3:4); zeros(4,1)];
+w = [zeros(2,1); sqrtm(Q(3:4, 3:4))*randn(2,1); zeros(4,1)]; 
 
 % propigate the dynamics
-x0 = state.x;
-[~, x] = ode45(@(t, y) odeDynamics(t, y, inp, w), [0 inp.ts], x0);
-x = reshape(x(end,:), 8, 1);
+dx = xDynamics(inp, x, w);
+x = dx*inp.ts + x;
 
 % check if falling
-if state.x(2) <= 0
+if x(2) <= 0
     state.falling = false;
 end
 
@@ -39,7 +39,7 @@ if rem(i, i_measure) == 0
     v = randn*sqrt(inp.R);
     
     % measure state
-    y = measure(inp, x);
+    y = xMeasure(inp, x);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Ouputs
@@ -54,7 +54,6 @@ end
 state.x = x;
 state.Q = Q;
 state.w = w;
-state.F = F;
 state.t = t;
 end
 

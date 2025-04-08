@@ -1,10 +1,9 @@
-function plotErrors(state_hist, measurement_hist, estimate_hist)
+function plotErrors(state_hist, estimate_hist)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Parse time history data
 
 % pull time data
 t_hist = [state_hist.t];
-tk_hist = [measurement_hist.t];
 
 % t-axis bounds for plots
 t_bounds = [t_hist(1) t_hist(end)];
@@ -21,18 +20,9 @@ Ppost_hist = [estimate_hist.P_post];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Process Estimation Data
 
-% get the true states at each measurement
-xk = x_hist(:,1);
-xk_hist = xk;
-for i = 2:length(tk_hist)
-    ik = t_hist==tk_hist(i);
-    xk = x_hist(:,ik);
-    xk_hist = [xk_hist xk];
-end
-
 % get the estimate errors
-eprior_hist = xk_hist - xprior_hist;
-epost_hist = xk_hist - xpost_hist;
+eprior_hist = x_hist - xprior_hist;
+epost_hist = x_hist - xpost_hist;
 
 % get the covariance standard deviations
 Sprior_hist = [sqrt(Pprior_hist(1,1));
@@ -52,7 +42,7 @@ Spost_hist = [sqrt(Ppost_hist(1,1));
               sqrt(Ppost_hist(7,7));
               sqrt(Ppost_hist(8,8));];
 
-for i = 1:(length(tk_hist) - 1)
+for i = 1:(length(t_hist) - 1)
     S = [sqrt(Pprior_hist(1,1 + i*8));
          sqrt(Pprior_hist(2,2 + i*8));
          sqrt(Pprior_hist(3,3 + i*8));
@@ -77,16 +67,16 @@ for i = 1:(length(tk_hist) - 1)
 end
 
 % zip together the apriori and aposteriori measurements
-e_hist = zeros(8,length(tk_hist)*2);
-S_hist = zeros(8,length(tk_hist)*2);
-th_hist = zeros(1,length(tk_hist)*2);
-for i = 1:length(tk_hist)
+e_hist = zeros(8,length(t_hist)*2);
+S_hist = zeros(8,length(t_hist)*2);
+th_hist = zeros(1,length(t_hist)*2);
+for i = 1:length(t_hist)
     e_hist(:,2*i - 1) = eprior_hist(:,i);
     e_hist(:,2*i) = epost_hist(:,i);
     S_hist(:,2*i - 1) = Sprior_hist(:,i);
     S_hist(:,2*i) = Spost_hist(:,i);
-    th_hist(:,2*i - 1) = tk_hist(:,i);
-    th_hist(:,2*i) = tk_hist(:,i);
+    th_hist(:,2*i - 1) = t_hist(:,i);
+    th_hist(:,2*i) = t_hist(:,i);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
