@@ -1,4 +1,4 @@
-function y = measure(inp, x)
+function y = xMeasure(inp, x)
 
 % get variables from state vector and input 
 r_x     = x(1);

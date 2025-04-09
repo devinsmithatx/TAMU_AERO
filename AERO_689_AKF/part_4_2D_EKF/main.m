@@ -49,7 +49,7 @@ inp.m = 1;
 inp.g = 9.8066;
 
 % Simulation Parameters
-inp.seed = 3;
+inp.seed = 50;
 inp.ts = 0.01;      % simulation time step
 inp.tf = 30;        % simulation max time
 inp.method = '2';   % algorithm 1 or 2 for the EKF

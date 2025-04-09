@@ -15,6 +15,8 @@ Q_hist = [state_hist.Q];
 y_hist = [measurement_hist.y];
 v_hist = [measurement_hist.v];
 
+l = 1.5; % linewidth
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Process State Data
 
@@ -47,42 +49,42 @@ end
 
 % PLOT process noise 1
 figure; 
-line1 = plot(t_hist, w_hist(3,:),'b', DisplayName="$\omega$"); hold on;
-plot(t_hist, 0*t_hist, 'k-');
-line2 = plot(t_hist, S_hist(3,:), 'k--', DisplayName="$\sigma$");
-plot(t_hist, -S_hist(3,:),'k--');
+line1 = plot(t_hist, w_hist(3,:),'b', DisplayName="$w$", LineWidth=l); hold on;
+plot(t_hist, 0*t_hist, 'k--',LineWidth=l);
+line2 = plot(t_hist, S_hist(3,:), 'k-', DisplayName="$\sigma$", LineWidth=l);
+plot(t_hist, -S_hist(3,:),'k-', LineWidth=l);
 xlim(t_bounds);
 legend([line1 line2], Interpreter="latex", Location="best");
-title("$\omega_x$", Interpreter="latex"); 
+title("$w_x$", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
-ylabel("$\omega$ $(m/s^2)$", Interpreter="latex");
+ylabel("$w$ $(m/s^2)$", Interpreter="latex");
 
 % PLOT process noise 2
 figure; 
-line1 = plot(t_hist, w_hist(4,:), 'b', DisplayName="$\omega$"); hold on;
-plot(t_hist, 0*t_hist, 'k-');
-line2 = plot(t_hist, S_hist(4,:), 'k--', DisplayName="$\sigma$");
-plot(t_hist, -S_hist(3,:),'k--');
+line1 = plot(t_hist, w_hist(4,:), 'b', DisplayName="$w$", LineWidth=l); hold on;
+plot(t_hist, 0*t_hist, 'k--', LineWidth=l);
+line2 = plot(t_hist, S_hist(4,:), 'k-', DisplayName="$\sigma$", LineWidth=l);
+plot(t_hist, -S_hist(3,:),'k-', LineWidth=l);
 xlim(t_bounds);
 legend([line1 line2], Interpreter="latex", Location="best")
-title("$\omega_y$", Interpreter="latex"); 
+title("$w_y$", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
-ylabel("$\omega$ $(m/s^2)$", Interpreter="latex");
+ylabel("$w$ $(m/s^2)$", Interpreter="latex");
 
 % PLOT measurement noise
 figure; 
-line1 = plot(tk_hist, v_hist, 'bx', DisplayName="$\nu$"); hold on;
-plot(tk_hist, 0*tk_hist, 'k-');
-line2 = plot(tk_hist, sqrt(inp.R)*ones(length(tk_hist),1), 'k--', DisplayName="$\sigma$");
-plot(tk_hist, -sqrt(inp.R)*ones(length(tk_hist),1),'k--');
+line1 = plot(tk_hist, v_hist, 'bx', DisplayName="$v$", LineWidth=l); hold on;
+plot(tk_hist, 0*tk_hist, 'k--', LineWidth=l);
+line2 = plot(tk_hist, sqrt(inp.R)*ones(length(tk_hist),1), 'k-', DisplayName="$\sigma$", LineWidth=l);
+plot(tk_hist, -sqrt(inp.R)*ones(length(tk_hist),1),'k-', LineWidth=l);
 xlim(t_bounds);
 legend([line1 line2], Interpreter="latex", Location="best")
-title("$\nu_k$", Interpreter="latex"); 
+title("$v_k$", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
-ylabel("$\nu$ (m)", Interpreter="latex");
+ylabel("$v$ (m)", Interpreter="latex");
 
 % PLOT range
-figure; plot(tk_hist, y_hist(1,:), 'bx'); xlim(t_bounds);
+figure; plot(tk_hist, y_hist(1,:), 'bx',LineWidth=l); xlim(t_bounds);
 title("$r_k$", Interpreter="latex"); 
 xlabel("$t$ (s)", Interpreter="latex"); 
 ylabel("$r$ (m)", Interpreter="latex");

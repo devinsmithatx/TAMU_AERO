@@ -15,6 +15,8 @@ x_hist = [state_hist.x];
 xprior_hist = [estimate_hist.x_prior];
 xpost_hist = [estimate_hist.x_post];
 
+l = 1.5; % linewidth
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Process Estimation Data
 
@@ -33,8 +35,8 @@ end
 
 % PLOT x position
 figure; 
-line1 = plot(t_hist, x_hist(1,:), 'k', DisplayName="$x$"); hold on;
-line2 = plot(th_hist, xh_hist(1,:), 'b-', DisplayName="$\hat{x}$");
+line1 = plot(t_hist, x_hist(1,:), 'k', DisplayName="$x$", LineWidth=l); hold on;
+line2 = plot(th_hist, xh_hist(1,:), 'b-', DisplayName="$\hat{x}$", LineWidth=l);
 xlim(t_bounds); 
 legend([line1 line2], Interpreter="latex", Location="best")
 title("$r_x$", Interpreter="latex"); 
@@ -43,8 +45,8 @@ ylabel("$r$ (m)", Interpreter="latex");
 
 % PLOT y position
 figure;
-line1 = plot(t_hist, x_hist(2,:), 'k', DisplayName="$x$");  hold on;
-line2 = plot(th_hist, xh_hist(2,:), 'b-', DisplayName="$\hat{x}$");
+line1 = plot(t_hist, x_hist(2,:), 'k', DisplayName="$x$", LineWidth=l);  hold on;
+line2 = plot(th_hist, xh_hist(2,:), 'b-', DisplayName="$\hat{x}$", LineWidth=l);
 xlim(t_bounds); ylim([0 inp.x0(2)]);
 legend([line1 line2], Interpreter="latex", Location="best")
 title("$r_y$", Interpreter="latex"); 
@@ -53,8 +55,8 @@ ylabel("$r$ (m)", Interpreter="latex");
 
 % PLOT x velocity
 figure;
-line1 = plot(t_hist, x_hist(3,:), 'k', DisplayName="$x$");  hold on;
-line2 = plot(th_hist, xh_hist(3,:), 'b-', DisplayName="$\hat{x}$");
+line1 = plot(t_hist, x_hist(3,:), 'k', DisplayName="$x$", LineWidth=l);  hold on;
+line2 = plot(th_hist, xh_hist(3,:), 'b-', DisplayName="$\hat{x}$", LineWidth=l);
 xlim(t_bounds); 
 legend([line1 line2], Interpreter="latex", Location="best")
 title("$v_x$", Interpreter="latex"); 
@@ -63,8 +65,8 @@ ylabel("$v$ (m/s)", Interpreter="latex");
 
 % PLOT y velocity
 figure;
-line1 = plot(t_hist, x_hist(4,:), 'k', DisplayName="$x$");  hold on;
-line2 = plot(th_hist, xh_hist(4,:), 'b-', DisplayName="$\hat{x}$");
+line1 = plot(t_hist, x_hist(4,:), 'k', DisplayName="$x$", LineWidth=l);  hold on;
+line2 = plot(th_hist, xh_hist(4,:), 'b-', DisplayName="$\hat{x}$", LineWidth=l);
 xlim(t_bounds); 
 legend([line1 line2], Interpreter="latex", Location="best")
 title("$v_y$", Interpreter="latex"); 
@@ -73,8 +75,8 @@ ylabel("$v$ (m/s)", Interpreter="latex");
 
 % PLOT delta h
 figure;
-line1 = plot(t_hist, x_hist(5,:), 'k', DisplayName="$x$");  hold on;
-line2 = plot(th_hist, xh_hist(5,:), 'b-', DisplayName="$\hat{x}$");
+line1 = plot(t_hist, x_hist(5,:), 'k', DisplayName="$x$", LineWidth=l);  hold on;
+line2 = plot(th_hist, xh_hist(5,:), 'b-', DisplayName="$\hat{x}$", LineWidth=l);
 xlim(t_bounds);
 legend([line1 line2], Interpreter="latex", Location="best")
 title("$\Delta h$", Interpreter="latex"); 
@@ -83,8 +85,8 @@ ylabel("$h$ (m)", Interpreter="latex");
 
 % PLOT delta beta
 figure;
-line1 = plot(t_hist, x_hist(6,:), 'k', DisplayName="$x$");  hold on;
-line2 = plot(th_hist, xh_hist(6,:), 'b-', DisplayName="$\hat{x}$");
+line1 = plot(t_hist, x_hist(6,:), 'k', DisplayName="$x$", LineWidth=l);  hold on;
+line2 = plot(th_hist, xh_hist(6,:), 'b-', DisplayName="$\hat{x}$", LineWidth=l);
 xlim(t_bounds); 
 legend([line1 line2], Interpreter="latex", Location="best")
 title("$\Delta \beta$", Interpreter="latex"); 
@@ -93,8 +95,8 @@ ylabel("$\beta$", Interpreter="latex");
 
 % PLOT delta rho0
 figure; 
-line1 = plot(t_hist, x_hist(7,:), 'k', DisplayName="$x$");  hold on;
-line2 = plot(th_hist, xh_hist(7,:), 'b-', DisplayName="$\hat{x}$");
+line1 = plot(t_hist, x_hist(7,:), 'k', DisplayName="$x$", LineWidth=l);  hold on;
+line2 = plot(th_hist, xh_hist(7,:), 'b-', DisplayName="$\hat{x}$", LineWidth=l);
 xlim(t_bounds); 
 legend([line1 line2], Interpreter="latex", Location="best")
 title("$\Delta \rho_0$", Interpreter="latex"); 
@@ -103,8 +105,8 @@ ylabel("$\rho$ $(kg/m^3)$", Interpreter="latex");
 
 % PLOT delta k_p
 figure; 
-line1 = plot(t_hist, x_hist(8,:), 'k', DisplayName="$x$");  hold on;
-line2 = plot(th_hist, xh_hist(8,:), 'b-', DisplayName="$\hat{x}$");
+line1 = plot(t_hist, x_hist(8,:), 'k', DisplayName="$x$", LineWidth=l);  hold on;
+line2 = plot(th_hist, xh_hist(8,:), 'b-', DisplayName="$\hat{x}$", LineWidth=l);
 xlim(t_bounds); 
 legend([line1 line2], Interpreter="latex", Location="best")
 title("$\Delta k_p$", Interpreter="latex"); 
@@ -113,8 +115,8 @@ ylabel("$k_p$ (m)", Interpreter="latex");
 
 % PLOT Trajectory
 figure; 
-line1 = plot(x_hist(1,:), x_hist(2,:), 'k', DisplayName="$x$"); hold on; 
-line2 = plot( xh_hist(1,:), xh_hist(2,:), 'b-', DisplayName="$\hat{x}$");
+line1 = plot(x_hist(1,:), x_hist(2,:), 'k', DisplayName="$x$", LineWidth=l); hold on; 
+line2 = plot( xh_hist(1,:), xh_hist(2,:), 'b-', DisplayName="$\hat{x}$", LineWidth=l);
 ylim([0 x_hist(2,1)]); 
 legend([line1 line2], Interpreter="latex", Location="best")
 title("Object Trajectory", Interpreter="latex"); 

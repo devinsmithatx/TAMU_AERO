@@ -37,7 +37,6 @@ else
     P_prior = Phi*P*Phi.' + Q;
 end
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Update
 
@@ -67,4 +66,3 @@ estimate.x_post = x_post;
 estimate.P_post = P_post;
 estimate.K = K;
 end
-
