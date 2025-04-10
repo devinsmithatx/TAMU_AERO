@@ -22,7 +22,7 @@ estimate_hist = estimate;
 %% Simulation
 
 i = 1; % track time step
-while (state.falling) && (i <= i_max)
+while (state.falling) || (i <= i_max)
 
     % simulate environment
     [state, measurement] = simEnv(inp, state, measurement, i);
