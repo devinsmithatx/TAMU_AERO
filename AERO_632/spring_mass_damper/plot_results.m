@@ -1,42 +1,42 @@
-function plot_results(P_nom, P_unc ,CL_nom, CL_unc, gamma)
+function plot_results(P_nominal, P_uncertain ,CL_nominal, CL_uncertain, gamma)
 
 % Gamma as state space for plotting
 gamma = ss(gamma);
 
-% Open-Loop Pole-Zero Map
+% Open-Loop Poles & Zeros
 figure; 
-pzmap(P_unc, P_nom); 
+pzmap(P_uncertain, P_nominal); 
 title("Pole-Zero Map: Open-Loop")
 legend();
 
-% Closed-Loop Pole-Zero Map
+% Closed-Loop Poles & Zeros
 figure; 
-pzmap(CL_unc, CL_nom);
+pzmap(CL_uncertain, CL_nominal);
 title("Pole-Zero Map: Closed-Loop")
 set(findall(gcf,'type','line'),'linewidth',1.5);
 legend()
 
 % Step Response
 figure; 
-step(CL_unc, CL_nom); hold on; 
+step(CL_uncertain, CL_nominal); hold on; 
 set(findall(gcf,'type','line'),'linewidth',1.5);
 legend()
 
 % Singular Values
 figure; 
-sigma(CL_unc, CL_nom, gamma);
+sigma(CL_uncertain, CL_nominal, gamma);
 set(findall(gcf,'type','line'),'linewidth',1.5);
 legend()
 
 % Bode Magnitude
 figure; 
-bodemag(CL_unc, CL_nom, gamma);
+bodemag(CL_uncertain, CL_nominal, gamma);
 set(findall(gcf,'type','line'),'linewidth',1.5);
 legend()
 
 % Bode Magnitude + Phase
 figure; 
-bode(CL_unc, CL_nom, gamma);
+bode(CL_uncertain, CL_nominal, gamma);
 set(findall(gcf,'type','line'),'linewidth',1.5);
 legend()
 
