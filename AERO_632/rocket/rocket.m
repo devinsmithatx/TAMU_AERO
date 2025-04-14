@@ -8,9 +8,9 @@ clear; clc; close all
 % Control: tail plane deflection (delta_eta), induced aoa (alpha_w)
 % Measurement: pitch anlge (q)
 
-A = [   0.0000  1  0.00000; 
-       14.7805  0  0.01958;
-     -100.8580  1 -0.12560;];
+A = [   0.0000  1  0.00000;         % dtheta/dt
+       14.7805  0  0.01958;         % dq/dt
+     -100.8580  1 -0.12560;];       % dw/dt
 
 B = [ 0.0000   0.0000; 
       3.4858  14.7805; 
@@ -19,20 +19,23 @@ B = [ 0.0000   0.0000;
 C = [1 0 0];
 D = [0 0];
 
+rank(ctrb(A,B))
+rank(obsv(A,C))
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Disturbance model
-Bw = [0; 0; 1];              % assuming disturbance is in form of m/s^2
+Bw = [0; 0; 1];       % need to check units
 
-% Minimize [theta]^T
-Cz = [1 0 0];
-Dz = [0 0 0];
+% Minimize [theta u1 u2]^T
+Cz = [1 0 0; 0 0 0; 0 0 0];
+Dz = [0 0 0; 0 0 1; 0 0 1];
 
 % Open-Loop
 P = ss(A, [Bw B], [Cz; C], [Dz; 0 D]);
 P.StateName = {'theta'; 'q'; 'w'};
 P.InputName = {'d'; 'u1'; 'u2'};
-P.OutputName = {'z1'; 'y1'};
+P.OutputName = {'z1'; 'z2'; 'z3'; 'y1'};
 
 % Nominal Closed-Loop
 [K, CL, gamma] = hinfsyn(P, height(C), width(B));
@@ -40,3 +43,4 @@ P.OutputName = {'z1'; 'y1'};
 
 % plot results
 plot_results(P, CL, gamma)
+

@@ -14,6 +14,9 @@ clc; clear; close all
 % Load A, B, C, D matrices
 missile_linearized
 
+rank(ctrb(A,B))  % not full rank :(
+rank(obsv(A,C))  % not full rank :(
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Disturbance model

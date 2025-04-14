@@ -24,7 +24,7 @@ Cz = [1 0 0 0; 0 0 0 0;];
 Dzw = [0; 0];
 Dzu = [0; 1];
 
-% Measure y = d^2/dt^2 x1
+% Measure y = d^2/dt^2 x1 (acceleration of x1)
 Cy = A(3,:); 
 Dyw = Bw(3,:); 
 Dyu = Bu(3,:);
@@ -42,8 +42,8 @@ P_nominal = P.NominalValue;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Closed-Loop State-Space Model
 
-% Nominal Closed-Loop
-[K, CL, gamma] = hinfsyn(P, height(Cy), width(Bu));
+% Nominal Closed-Loopl,
+[K, CL, gamma] = hinfsyn(P, 0, width(Bu));
 % [K, CL, gamma] = h2syn(P, height(Cy), width(Bu));
 
 % Uncertain Closed-Loop (insert uncertain P.A and P.B into CL.A and CL.B)
