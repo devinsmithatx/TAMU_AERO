@@ -2,7 +2,7 @@ function estimate = initialEstimate(inp, measurement)
 
 % initial estimates and mesurement
 y = measurement.y;
-x = inp.xh0_sampled;
+x = inp.xh0;
 P = inp.P0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
