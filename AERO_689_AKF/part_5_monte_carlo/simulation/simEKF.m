@@ -20,7 +20,7 @@ if strcmp(inp.method, '1')
     % ALGORITHM 1
     F = jacobianF(inp, x);
 
-    dP = F*P + P*F.' + inp.Qs;
+    dP = F*P + P*F.' + inp.Qs_EKF;
     P_prior = dP.*inp.ts + P;
 else
     % ALGORITHM 2
@@ -28,7 +28,7 @@ else
     Phi = eye(8);
     F = jacobianF(inp, x);
 
-    dQ = F*Q + Q*F.' + inp.Qs;
+    dQ = F*Q + Q*F.' + inp.Qs_EKF;
     Q = dQ.*inp.ts + Q;
     
     dPhi = F*Phi;
@@ -46,7 +46,7 @@ if rem(i, i_measure) == 0
     H = jacobianH(inp, x_prior);
     
     % update
-    K = (P_prior * H.') * (H * P_prior * H.' + inp.R)^(-1);
+    K = (P_prior * H.') * (H * P_prior * H.' + inp.R_EKF)^(-1);
     x_post = x_prior + K*(y - y_prior);
     P_post = (eye(8) - K*H)*P_prior;
 else

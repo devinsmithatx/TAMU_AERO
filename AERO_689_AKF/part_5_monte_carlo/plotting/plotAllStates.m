@@ -2,10 +2,12 @@ function plotAllStates(sim_data, m)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot time history data
 
-l = 1.5;                     % linewidth
-rgb_true = [0.0 0.0 0.0];    % true state color
-rgb_est = [0.2 0.5 0.9];     % estimated state color
+% line settings
+l = 1.5;                    % linewidth
+rgb = [0.2 0.5 0.9 0.2];    % color 1
+rgb2 = [0.0 0.0 0.0 0.2];   % color 2
 
+% titles and labels
 titles = {"$r_x$", "$r_y$", ...
           "$v_x$", "$v_y$", ...
           "$\Delta h$", "$\Delta \beta$", ...
@@ -14,6 +16,7 @@ titles = {"$r_x$", "$r_y$", ...
 labels = {"$r$ (m)", "$r$ (m)", "$v$ (m/s)", "$v$ (m/s)", ...
           "$h$ (m)", "$\beta$", "$\rho$ $(kg/m^3)$", "$k_p$ (m)"};
 
+% loop through each plot and monte carlo sims
 for k = 1:8
     for i = 1:m
 
@@ -29,27 +32,23 @@ for k = 1:8
         figure(20);
         x = x_hist(1,:);
         y = x_hist(2,:);
-        z = zeros(size(x));
-        S1 = surface([x; x], [y; y], [z; z], ...
-            'facecol', 'no', 'edgecol', 'interp', ...
-            'linew', l, 'edgealpha', 0.1, 'edgecolor', rgb_true); hold on;
-        ylim([0 inf])
-        title("Trajectory", 'Interpreter', 'latex');
-        xlabel("$x$ (m)", 'Interpreter', 'latex');
-        ylabel("$y$ (m)", 'Interpreter', 'latex');
+
+        S1 = plot(x,y,'Color',rgb2, 'LineWidth',l); hold on;
         
         % Estimated trajectory
         x = xh_hist(1,:);
         y = xh_hist(2,:);
-        z = zeros(size(x));
-        S2 = surface([x; x], [y; y], [z; z], ...
-            'facecol', 'no', 'edgecol', 'interp', ...
-            'linew', l, 'edgealpha', 0.1, 'edgecolor', rgb_est); hold on;
-        legend([S1, S2], '$x$', '$\hat{x}$', 'Interpreter', 'latex', 'Location', 'best');
 
+        S2 = plot(x,y,'Color',rgb, 'LineWidth',l); hold on;
+
+        legend([S1, S2], '$x$', '$\hat{x}$', 'Interpreter', 'latex', 'Location', 'best');
+        ylim([0 inf])
+        title("Trajectory", 'Interpreter', 'latex');
+        xlabel("$x$ (m)", 'Interpreter', 'latex');
+        ylabel("$y$ (m)", 'Interpreter', 'latex');
     else
-        plotStateSurface(12 + k, t_bounds, t_hist, th_hist, x_hist(k,:), xh_hist(k,:), ...
-            titles{k}, labels{k}, l, rgb_true, rgb_est);
+        plotFigure(12 + k, t_bounds, t_hist, th_hist, x_hist(k,:), xh_hist(k,:), ...
+            titles{k}, labels{k}, l, rgb, rgb2);
     end
     end
 end
@@ -58,30 +57,25 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Surface plotting block
 
-function plotStateSurface(fig_num, t_bounds, t_hist, th_hist, x_true, x_est, title_text, y_label, l, rgb_true, rgb_est)
+function plotFigure(fig_num, t_bounds, t_hist, th_hist, x_true, x_est, title_text, y_label, l, rgb, rgb2)
     figure(fig_num);
 
-    % True State
+    % x
     x = t_hist;
-    y = x_true;
-    z = zeros(size(x));
-    S1 = surface([x; x], [y; y], [z; z], ...
-        'facecol', 'no', 'edgecol', 'interp', ...
-        'linew', l, 'edgealpha', 0.1, 'edgecolor', rgb_true); hold on;
+    xh = th_hist;
 
-    % Estimated State
-    x = th_hist;
+    % true State
+    y = x_true;
+    S1 = plot(x,y,'Color',rgb2, 'LineWidth',l); hold on;
+
+    % estimated State
     y = x_est;
-    z = zeros(size(x));
-    S2 = surface([x; x], [y; y], [z; z], ...
-        'facecol', 'no', 'edgecol', 'interp', ...
-        'linew', l, 'edgealpha', 0.1, 'edgecolor', rgb_est); hold on;
+    S2 = plot(xh,y,'Color',rgb, 'LineWidth',l); hold on;
 
     xlim(t_bounds);
     xlabel('$t$ (s)', 'Interpreter', 'latex');
     ylabel(y_label, 'Interpreter', 'latex');
     title(title_text, 'Interpreter', 'latex');
     legend([S1, S2], '$x$', '$\hat{x}$', 'Interpreter', 'latex', 'Location', 'best');
-
 end
 

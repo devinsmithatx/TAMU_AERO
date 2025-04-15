@@ -8,7 +8,7 @@ addpath("plotting\");
 addpath("simulation\");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Truth System Inputs
+%% System Truth Inputs
 
 % Mass & Gravity
 inp.m = 1;
@@ -30,25 +30,39 @@ inp.bar = [   2.000;            % h_bar
               1.225;            % rho_0_bar
            9200.000];           % k_p_bar
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Stochastic System Inputs
-
 % Process Noise Spectral Density
 inp.Qs = 1*diag([0 0 1 1 0 0 0 0]);
 
 % Measurement Noise Variance
 inp.R = 4;
 
+% Measurement Sampling
+inp.tm = 1/2;                   % Delta t_k
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% EKF Tuning Inputs
+
+% Process Noise Spectral Density
+inp.Qs_EKF = 1*diag([0 0 1 1 0 0 0 0]);
+
+% Measurement Noise Variance
+inp.R_EKF = 4;
+
 % Initial Error Covariance Estimate
 inp.P0 = diag([10 1000 5 10 0.04 225 0.015 846400]);
+
+% EKF Algorithm
+inp.method = '2';   % algorithm 1 or 2
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Simulation Inputs
 
+% sim settings
 m = 1000;           % number of runs for monte carlo
-inp.ts = 0.01;      % simulation time step
-inp.tm = 1/2;       % EKF & Radar sampling period
-inp.method = '2';   % algorithm 1 or 2 for the EKF
+inp.ts = 0.01;      % dynamics propagation time step (also EKF propagation)
+
+% plot settings
+n = 50;            % # of runs to plot, as n-->m, runtime increases
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Monte Carlo Simulation
@@ -59,8 +73,7 @@ inp.method = '2';   % algorithm 1 or 2 for the EKF
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plotting Sim Data
 
-% plot sim data from first 'n' runs (plotting 1000 takes a long time)
-n = 50;
+% plot sim data from first 'n' runs
 plotAllNoise(inp, sim_data, n);
 plotAllErrors(sim_data, n);
 plotAllStates(sim_data, n);

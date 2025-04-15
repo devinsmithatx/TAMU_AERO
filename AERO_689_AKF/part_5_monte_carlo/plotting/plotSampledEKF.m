@@ -2,10 +2,11 @@ function plotSampledEKF(sim_data, sample_data)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot Time History data
 
-l = 1.5;                % linewidth
-rgb2 = [0.0 0.0 0.0];   % line colors
-rgb = [0.2 0.5 0.9]; 
-rgb3 = [0.9 0.5 0.2];
+% line settings
+l = 1.5;                    % linewidth
+rgb = [0.2 0.5 0.9];    % color 1
+rgb2 = [0.0 0.0 0.0];   % color 2
+rgb3 = [0.9 0.5 0.2];    % color 3
 
 % pull data from 1st run aka "nominal run"
 e_hist = [sim_data{1}.e_hist];
@@ -39,27 +40,27 @@ function plotData(fig_num, t_bounds, th_hist, e_data, e_bar_data, s_data, s_bar_
     % Error surface
     x = th_hist;
     y = e_bar_data;
-    S1 = plot(x, y, '--','Color',rgb3); hold on;
+    S1 = plot(x, y, '--','Color',rgb3,'LineWidth',l); hold on;
 
     y = e_data;
-    S2 = plot(x, y,'--','Color',rgb);
+    S2 = plot(x, y,'--','Color',rgb,'LineWidth',l);
 
     % Zero line
     plot(th_hist, zeros(size(th_hist)), 'k--', 'LineWidth', l);
 
     % +1 sigma surface
     y = s_data;
-    S3 = plot(x, y, 'Color',rgb2);
+    S3 = plot(x, y, 'Color',rgb2,'LineWidth',l);
 
     y = s_bar_data;
-    S4 = plot(x, y,'Color',rgb3);
+    S4 = plot(x, y,'Color',rgb3,'LineWidth',l);
 
     % -1 sigma surface
     y = -s_data;
-    plot(x, y, 'Color',rgb2);
+    plot(x, y, 'Color',rgb2,'LineWidth',l);
 
     y = -s_bar_data;
-    plot(x, y,'Color',rgb3);
+    plot(x, y,'Color',rgb3,'LineWidth',l);
 
     xlim(t_bounds);
     legend([S1, S2, S3, S4], '$e$', '$\bar{e}$', '$1 \sigma$', '$1 \bar{\sigma}$','Interpreter', 'latex', 'Location', 'best');

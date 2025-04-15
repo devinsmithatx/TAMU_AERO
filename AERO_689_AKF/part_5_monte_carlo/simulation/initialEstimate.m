@@ -22,7 +22,7 @@ y_prior = xMeasure(inp, x_prior);
 H = jacobianH(inp, x_prior);
 
 % update
-K = (P_prior * H') / (H * P_prior * H' + inp.R);
+K = (P_prior * H') / (H * P_prior * H' + inp.R_EKF);
 x_post = x_prior + K*(y - y_prior);
 P_post = (eye(8) - K*H)*P_prior;
 
