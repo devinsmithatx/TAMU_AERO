@@ -4,10 +4,19 @@ function [sim_data, sample_data] = monteCarlo(inp, m)
 
 % repeat simulation m times with sampled data each time
 sim_data = cell(m,1);
+
+% find the time until it falls (keeps t_hist same for all runs)
+inp.tf = findTf(inp);
+
 for i = 1:m
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Simulate Run
+
+    % update every 50 runs
+    if mod(i,50) == 0
+        disp(['Monte Carlo Run #' num2str(i) '...'])
+    end
 
     % change rng seed
     rng(i);
@@ -26,7 +35,6 @@ for i = 1:m
     x_hist = [state_hist.x];
     Q_hist = [state_hist.Q];
     t_hist = [state_hist.t];
-    tk_hist = [measurement_hist.t];
     
     % pull ekf data
     xprior_hist = [estimate_hist.x_prior];
@@ -39,16 +47,16 @@ for i = 1:m
     epost_hist = x_hist - xpost_hist;
 
     % calculate process noise & error covariance standard deviations
-    SQ_hist = diag(Q_hist(:,1:8)).^.5;
-    SPprior_hist = diag(Pprior_hist(:,1:8)).^.5;
-    SPpost_hist = diag(Ppost_hist(:,1:8)).^.5;
-    for j = 1:(length(t_hist) - 1)
-        SQ = diag(Q_hist(:, 1 + j*8 : 8 + j*8)).^.5;
-        SPprior = diag(Pprior_hist(:, 1 + j*8 : 8 + j*8)).^.5;
-        SPpost = diag(Ppost_hist(:, 1 + j*8 : 8 + j*8)).^.5;
-        SQ_hist = [SQ_hist SQ];
-        SPprior_hist = [SPprior_hist SPprior];
-        SPpost_hist = [SPpost_hist SPpost];
+    SQ_hist = zeros(8, length(t_hist));
+    SPprior_hist = zeros(8, length(t_hist));
+    SPpost_hist = zeros(8, length(t_hist));
+    for j = 0:(length(t_hist)-1)
+        SQ = diag(Q_hist(:,1+j*8:j*8+8)).^.5;
+        SPprior = diag(Pprior_hist(:,1+j*8:j*8+8)).^.5;
+        SPpost = diag(Ppost_hist(:,1+j*8:j*8+8)).^.5;
+        SQ_hist(:,j+1) = SQ;
+        SPprior_hist(:,j+1) = SPprior;
+        SPpost_hist(:,j+1) = SPpost;
     end
     
     % zip together the apriori and aposteriori measurements
@@ -81,35 +89,40 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Process all Monte Carlo Runs
 
-% % calculate the mean error
-% e_bar = [];
-% for j = 1:length(th_hist)
-%     ei = sim_data{1}.e_hist;
-%     ej_sum = ei(:,j);
-%     for i = 2:m
-%         ei = sim_data{i}.e_hist;
-%         ej_sum = ej_sum + ei(:,j);
-%     end
-%     e_bar = [e_bar  ej_sum./m];
-% end
-% 
-% % calculate sampled estimation error covariance
-% P_bar = [];
-% for j = 1:length(th_hist)
-%     ei = sim_data{1}.e_hist;
-%     Pj_sum = (ei(:,j) - e_bar(:,j))*(ei(:,j) - e_bar(:,j))';
-%     for i = 2:m
-%         ei = sim_data{i}.e_hist;
-%         Pj = (ei(:,j) - e_bar(:,j))*(ei(:,j) - e_bar(:,j))';
-%         Pj_sum = Pj_sum + Pj;
-%     end
-%     P_bar = [P_bar  Pj_sum./(m - 1)];
-% end
-% 
-% % store the sampled data
-% sample_data.e_bar_hist = e_bar;
-% sample_data.P_bar_hist = P_bar;
+% calculate the mean error
+e_bar = zeros(8, length(t_hist)*2);
+for j = 1:length(th_hist)
+    ei = sim_data{1}.e_hist;
+    ej_sum = ei(:,j);
+    for i = 2:m
+        ei = sim_data{i}.e_hist;
+        ej_sum = ej_sum + ei(:,j);
+    end
+    e_bar(:,j) = ej_sum./m;
+end
 
-sample_data = 0;
+% calculate sampled estimation error covariance
+P_bar = zeros(8, length(th_hist)*8);
+for j = 1:length(th_hist)
+    ei = sim_data{1}.e_hist;
+    Pj_sum = (ei(:,j) - e_bar(:,j))*(ei(:,j) - e_bar(:,j))';
+    for i = 2:m
+        ei = sim_data{i}.e_hist;
+        Pj = (ei(:,j) - e_bar(:,j))*(ei(:,j) - e_bar(:,j))';
+        Pj_sum = Pj_sum + Pj;
+    end
+    P_bar(:,1+j*8:j*8+8) = Pj_sum./(m - 1);
+end
+
+% error covariance standard deviations
+SPbar_hist = zeros(8, length(th_hist));
+for j = 1:length(th_hist) 
+    SPbar = diag(P_bar(:, 1 + j*8 : 8 + j*8)).^.5;
+    SPbar_hist(:,j)=  SPbar;
+end
+    
+% store the sampled data
+sample_data.e_bar_hist = e_bar;
+sample_data.SP_bar_hist = SPbar_hist;
 
 end

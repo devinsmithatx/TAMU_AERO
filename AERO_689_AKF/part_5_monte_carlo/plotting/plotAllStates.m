@@ -6,6 +6,14 @@ l = 1.5;                     % linewidth
 rgb_true = [0.0 0.0 0.0];    % true state color
 rgb_est = [0.2 0.5 0.9];     % estimated state color
 
+titles = {"$r_x$", "$r_y$", ...
+          "$v_x$", "$v_y$", ...
+          "$\Delta h$", "$\Delta \beta$", ...
+          "$\Delta \rho_0$", "$\Delta k_p$"};
+
+labels = {"$r$ (m)", "$r$ (m)", "$v$ (m/s)", "$v$ (m/s)", ...
+          "$h$ (m)", "$\beta$", "$\rho$ $(kg/m^3)$", "$k_p$ (m)"};
+
 for k = 1:8
     for i = 1:m
 
@@ -15,14 +23,6 @@ for k = 1:8
     t_hist = [sim_data{i}.state_hist.t];
     th_hist = [sim_data{i}.th_hist];
     t_bounds = [0 inf];
-
-    titles = {"$r_x$", "$r_y$", ...
-              "$v_x$", "$v_y$", ...
-              "$\Delta h$", "$\Delta \beta$", ...
-              "$\Delta \rho_0$", "$\Delta k_p$"};
-
-    labels = {"$r$ (m)", "$r$ (m)", "$v$ (m/s)", "$v$ (m/s)", ...
-              "$h$ (m)", "$\beta$", "$\rho$ $(kg/m^3)$", "$k_p$ (m)"};
 
     if k == 8
          % True trajectory

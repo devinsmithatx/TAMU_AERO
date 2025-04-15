@@ -40,14 +40,13 @@ inp.Qs = 1*diag([0 0 1 1 0 0 0 0]);
 inp.R = 4;
 
 % Initial Error Covariance Estimate
-inp.P0 = diag([10 1000 .1 10 0.04 225 0.015 846400]);
+inp.P0 = diag([10 1000 5 10 0.04 225 0.015 846400]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Simulation Inputs
 
-m = 20;            % number of runs for monte carlo
+m = 1000;           % number of runs for monte carlo
 inp.ts = 0.01;      % simulation time step
-inp.tf = 25;        % simulation max alloted time falling
 inp.tm = 1/2;       % EKF & Radar sampling period
 inp.method = '2';   % algorithm 1 or 2 for the EKF
 
@@ -57,13 +56,14 @@ inp.method = '2';   % algorithm 1 or 2 for the EKF
 % run the monte carlo simulation
 [sim_data, sample_data] = monteCarlo(inp,m);
 
-% plot all data from first n runs
-plotAllNoise(inp, sim_data, m);
-plotAllErrors(sim_data, m);
-plotAllStates(sim_data, m);
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% EKF Performance Check
+%% Plotting Sim Data
+
+% plot sim data from first 'n' runs (plotting 1000 takes a long time)
+n = 50;
+plotAllNoise(inp, sim_data, n);
+plotAllErrors(sim_data, n);
+plotAllStates(sim_data, n);
 
 % plot nominal EKF run vs mean error & sampled error covariance
 plotSampledEKF(sim_data, sample_data);

@@ -6,6 +6,9 @@ l = 1.5;                % linewidth
 rgb2 = [0.0 0.0 0.0];   % line colors
 rgb = [0.2 0.5 0.9]; 
 
+titles = {"$w_x$", "$w_y$"};
+labels = {"$w$ $(m/s^2)$", "$w$ $(m/s^2)$"};
+
 for k = 1:4
     for i = 1:m
 
@@ -17,9 +20,6 @@ for k = 1:4
         t_hist = [sim_data{i}.state_hist.t];
         tk_hist = [sim_data{i}.measurement_hist.t];
         t_bounds = [0 inf];
-
-        titles = {"$w_x$", "$w_y$"};
-        labels = {"$w$ $(m/s^2)$", "$w$ $(m/s^2)$"};
 
         if k == 1 || k == 2
             plotSurfaceFigure(k, t_bounds, t_hist, w_hist(k+2,:), S_hist(k+2,:), ...
@@ -55,7 +55,7 @@ for k = 1:4
             title("$r_k$", 'Interpreter', 'latex'); 
             xlabel("$t$ (s)", 'Interpreter', 'latex'); 
             ylabel("$r$ (m)", 'Interpreter', 'latex');
-            legend([S5], '$r$', 'Interpreter', 'latex', 'Location', 'best');
+            legend(S5, '$r$', 'Interpreter', 'latex', 'Location', 'best');
         
             view([0, 90]);
             axis vis3d;    

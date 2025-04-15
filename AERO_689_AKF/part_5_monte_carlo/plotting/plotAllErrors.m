@@ -6,6 +6,15 @@ l = 1.5;                % linewidth
 rgb2 = [0.0 0.0 0.0];   % line colors
 rgb = [0.2 0.5 0.9]; 
 
+    
+titles = {"$r_x$ Error", "$r_y$ Error", ...
+          "$v_x$ Error", "$v_y$ Error", ...
+          "$\Delta h$ Error", "$\Delta \beta$ Error", ...
+          "$\Delta \rho_0$ Error", "$\Delta k_p$ Error"};
+    
+labels = {"$r$ (m)", "$r$ (m)", "$v$ (m/s)", "$v$ (m/s)", ...
+          "$h$ (m)", "$\beta$", "$\rho$ $(kg/m^3)$", "$k_p$ (m)"};
+
 for k=1:8
     for i=1:m
     
@@ -14,14 +23,6 @@ for k=1:8
     S_hist = [sim_data{i}.SP_hist];
     th_hist = [sim_data{i}.th_hist];
     t_bounds = [0 inf];
-    
-    titles = {"$r_x$ Error", "$r_y$ Error", ...
-              "$v_x$ Error", "$v_y$ Error", ...
-              "$\Delta h$ Error", "$\Delta \beta$ Error", ...
-              "$\Delta \rho_0$ Error", "$\Delta k_p$ Error"};
-    
-    labels = {"$r$ (m)", "$r$ (m)", "$v$ (m/s)", "$v$ (m/s)", ...
-              "$h$ (m)", "$\beta$", "$\rho$ $(kg/m^3)$", "$k_p$ (m)"};
 
     plotSurfaceFigure(k + 4, t_bounds, th_hist, e_hist(k,:), ...
                      S_hist(k,:), titles{k}, labels{k}, l, rgb, rgb2);
