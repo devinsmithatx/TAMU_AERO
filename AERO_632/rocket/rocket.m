@@ -41,6 +41,19 @@ P.OutputName = {'z1'; 'z2'; 'z3'; 'y1'};
 [K, CL, gamma] = hinfsyn(P, height(C), width(B));
 % [K, CL, gamma] = h2syn(P, height(C), width(B));
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % plot results
 plot_results(P, CL, gamma)
+
+T = 0:0.01:20;
+w = 0.5*sin(10*T);
+[yout,t] = lsim(CL(1,1),w',T);
+
+figure; 
+subplot(2,1,1); title("Sinusoidal Disturbance")
+plot(t,yout); xlabel("t (s)"); ylabel("x1")
+subplot(2,1,2);
+plot(t,w); ylabel("w")
+
 
