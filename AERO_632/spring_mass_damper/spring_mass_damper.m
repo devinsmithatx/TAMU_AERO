@@ -20,20 +20,30 @@ Bw = [0; 0; 0; k2/m2];
 Bu = [0; 0; 1/m1; -1/m2];
 
 % Minimize z = [x1 u]^T
-Cz = [1 0 0 0; 0 0 0 0;]; 
-Dzw = [0; 0];
-Dzu = [0; 1];
+% Cz = [1 0 0 0; 0 0 0 0;]; 
+% Dzw = [0; 0];
+% Dzu = [0; 1];
+
+% Minimize z = x1
+Cz = [1 0 0 0];
+Dzw = 0;
+Dzu = 0;
 
 % Measure y = d^2/dt^2 x1 (acceleration of x1)
-Cy = A(3,:); 
-Dyw = Bw(3,:); 
-Dyu = Bu(3,:);
+% Cy = A(3,:); 
+% Dyw = Bw(3,:); 
+% Dyu = Bu(3,:);
+
+% Measure x1
+Cy = [1 0 0 0];
+Dyw = 0;
+Dyu = 0;
 
 % Open-Loop
 P = ss(A, [Bw Bu], [Cz; Cy], [Dzw Dzu; Dyw Dyu]);
 P.StateName = {'x1'; 'x2'; 'v1'; 'v2'};
 P.InputName = {'w'; 'u'};
-P.OutputName = {'z1'; 'z2'; 'y'};
+P.OutputName = {'z1'; 'y'};
 
 % Nominal & Uncertain Open-Loop (for plots)
 P_uncertain = P;
@@ -43,7 +53,7 @@ P_nominal = P.NominalValue;
 %% Closed-Loop State-Space Model
 
 % Nominal Closed-Loopl,
-[K, CL, gamma] = hinfsyn(P, 0, width(Bu));
+[K, CL, gamma] = hinfsyn(P, height(Cy), width(Bu));
 % [K, CL, gamma] = h2syn(P, height(Cy), width(Bu));
 
 % Uncertain Closed-Loop (insert uncertain P.A and P.B into CL.A and CL.B)
