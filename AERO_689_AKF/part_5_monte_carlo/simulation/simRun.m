@@ -1,26 +1,25 @@
+%% simRun.m
+
 function [state_hist, measurement_hist, estimate_hist] = simRun(inp)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Initialization
 
-% set sim paramenters
-i_max = inp.tf/inp.ts;       % # of iterations
-i_measure = inp.tm/inp.ts;   % # of iterations between measurement/estimate
-
 % initialize state, measurement, and estimate
-state = initialState(inp);                          % x(0)
-measurement = initialMeasurement(inp, state);       % y(0)
-estimate = initialEstimate(inp, measurement);       % xhat(0)
+state = initialState(inp);                          % x(t0)
+measurement = initialMeasurement(inp, state);       % y(t0)
+estimate = initialEstimate(inp, measurement);       % xhat(t0)
 
-% initialize time history data
-state_hist = repmat(state,1,i_max + 1);
-measurement_hist = repmat(measurement,1,int32(i_max/i_measure));
-estimate_hist = repmat(estimate,1,int32(i_max/i_measure));
+% allocate time history data
+state_hist = repmat(state,1,inp.i_max + 1);
+measurement_hist = repmat(measurement,1,int32(inp.i_max/inp.i_measure));
+estimate_hist = repmat(estimate,1,int32(inp.i_max/inp.i_measure));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Simulation
 
-for i = 1:i_max
+% sim the environment and EKF for all T
+for i = 1:inp.i_max
 
     % simulate environment
     [state, measurement] = simEnv(inp, state, measurement, i);
@@ -28,14 +27,13 @@ for i = 1:i_max
     % simulate kalman filter
     estimate = simEKF(inp, measurement, estimate, i);
 
-    % check for next measurement
-    if rem(i, i_measure) == 0
-
-    % store most recent state / measurement / estimate  
-        measurement_hist(int32(i/i_measure) + 1) = measurement;
-        estimate_hist(int32(i/i_measure) + 1) = estimate;
-    end
+    % store state at t_s
     state_hist(i + 1) = state;
-    
+
+    % store measurement & estimate at t_k 
+    if rem(i, inp.i_measure) == 0
+        measurement_hist(int32(i/inp.i_measure) + 1) = measurement;
+        estimate_hist(int32(i/inp.i_measure) + 1) = estimate;
+    end
 end
 end

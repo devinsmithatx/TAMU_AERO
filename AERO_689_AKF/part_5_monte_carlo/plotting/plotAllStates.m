@@ -1,3 +1,5 @@
+%% plotAllStates.m
+
 function plotAllStates(sim_data, m)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot time history data
@@ -17,7 +19,7 @@ labels = {"$r$ (m)", "$r$ (m)", "$v$ (m/s)", "$v$ (m/s)", ...
           "$h$ (m)", "$\beta$", "$\rho$ $(kg/m^3)$", "$k_p$ (m)"};
 
 % loop through each plot and monte carlo sims
-for k = 1:8
+for k = 1:9
     for i = 1:m
 
     % pull data
@@ -27,9 +29,9 @@ for k = 1:8
     th_hist = [sim_data{i}.th_hist];
     t_bounds = [0 inf];
 
-    if k == 8
+    if k == 9
          % True trajectory
-        figure(20);
+        figure(21);
         x = x_hist(1,:);
         y = x_hist(2,:);
 

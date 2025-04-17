@@ -1,4 +1,6 @@
-function plotAllNoise(inp, sim_data, m)
+%% plotAllNoise.m
+
+function plotAllNoise(sim_data, m)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot time history data
 
@@ -17,10 +19,11 @@ for k = 1:4
 
         % pull data
         w_hist = [sim_data{i}.state_hist.w];
+        t_hist = [sim_data{i}.state_hist.t];
         S_hist = [sim_data{i}.SQ_hist];
         y_hist = [sim_data{i}.measurement_hist.y];
         v_hist = [sim_data{i}.measurement_hist.v];
-        t_hist = [sim_data{i}.state_hist.t];
+        R_hist = [sim_data{i}.measurement_hist.R];
         tk_hist = [sim_data{i}.measurement_hist.t];
         t_bounds = [0 inf];
 
@@ -35,8 +38,8 @@ for k = 1:4
 
             S3 = scatter(x, y, 'o', 'MarkerEdgeColor',rgb(1:3),...
                     'MarkerEdgeAlpha', rgb(4), 'LineWidth',l); hold on;
-            S4 = plot(tk_hist, sqrt(inp.R)*ones(length(tk_hist), 1), 'k-', 'LineWidth', l);
-            plot(tk_hist, -sqrt(inp.R)*ones(length(tk_hist), 1), 'k-', 'LineWidth', l);
+            S4 = plot(tk_hist, R_hist.^.5, 'Color', rgb2, 'LineWidth', l);
+            plot(tk_hist, -R_hist.^.5, 'Color', rgb2, 'LineWidth', l);
 
             xlim(t_bounds);
             title("Measurement Noise - $v_k$", 'Interpreter', 'latex'); 

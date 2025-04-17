@@ -1,3 +1,5 @@
+%% xDynamics.m
+
 function dx = xDynamics(inp, x, w)
 
 % get parameters from state vector and input 

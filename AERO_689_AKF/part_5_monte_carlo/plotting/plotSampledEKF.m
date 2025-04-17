@@ -1,3 +1,5 @@
+%% plotSampledEKF.m
+
 function plotSampledEKF(sim_data, sample_data)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot Time History data
@@ -26,7 +28,7 @@ labels = {"$r$ (m)", "$r$ (m)", "$v$ (m/s)", "$v$ (m/s)", ...
           "$h$ (m)", "$\beta$", "$\rho$ $(kg/m^3)$", "$k_p$ (m)"};
 
 for k = 1:8
-    plotData(20 + k, t_bounds, th_hist, e_hist(k,:), e_bar_hist(k,:),...
+    plotData(21 + k, t_bounds, th_hist, e_hist(k,:), e_bar_hist(k,:),...
              S_hist(k,:), SP_bar_hist(k,:), titles{k}, ...
              labels{k}, l, rgb, rgb2);
 

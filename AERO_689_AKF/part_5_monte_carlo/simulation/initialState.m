@@ -1,3 +1,5 @@
+%% initialState.m
+
 function state = initialState(inp)
 
 % initialize the state parameters from initial conditions

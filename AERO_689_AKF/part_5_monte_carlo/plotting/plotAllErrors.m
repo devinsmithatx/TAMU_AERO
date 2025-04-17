@@ -1,3 +1,5 @@
+%% plotAllErrors.m
+
 function plotAllErrors(sim_data, m)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot Time History data

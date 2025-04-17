@@ -1,3 +1,5 @@
+%% simEKF.m
+
 function estimate = simEKF(inp, measurement, estimate, i)
 
 % get time stuff
@@ -16,13 +18,13 @@ dx = xDynamics(inp, x, 0);
 x_prior = dx*inp.ts + x;
 
 % propigate the covariance
-if strcmp(inp.method, '1')
+if inp.algorithm == 1
     % ALGORITHM 1
     F = jacobianF(inp, x);
 
     dP = F*P + P*F.' + inp.Qs_EKF;
     P_prior = dP.*inp.ts + P;
-else
+elseif inp.algorithm == 2
     % ALGORITHM 2
     Q = zeros(8);
     Phi = eye(8);

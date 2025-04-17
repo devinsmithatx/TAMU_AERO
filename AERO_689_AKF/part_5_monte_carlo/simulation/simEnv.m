@@ -1,3 +1,5 @@
+%% simEnv.m
+
 function [state, measurement] = simEnv(inp, state, measurement, i)
 
 % update timestep 
@@ -5,8 +7,7 @@ t = i*inp.ts;
 i_measure = inp.tm/inp.ts;
 
 % pull previous timestep stuff
-Q = state.Q;
-x = state.x;
+Q = state.Q; x = state.x;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Dynamics 
@@ -26,7 +27,7 @@ dx = xDynamics(inp, x, w);
 x = dx*inp.ts + x;
 
 % check if falling
-if x(2) <= 0
+if x(2) <= inp.ry_stop
     state.falling = false;
 end
 
@@ -47,6 +48,7 @@ if rem(i, i_measure) == 0
 
     % store measurement data 
     measurement.y = y + v;
+    measurement.R = inp.R;
     measurement.v = v;
     measurement.t = t; 
 end

@@ -1,3 +1,5 @@
+%% jacobianF.m
+
 function F = jacobianF(inp, x)
 
 % get parameters from state vector and input 

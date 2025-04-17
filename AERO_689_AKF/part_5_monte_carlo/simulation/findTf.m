@@ -1,3 +1,5 @@
+%% findTf.m
+
 function tf = findTf(inp)
 
 % initialize environment
@@ -13,4 +15,7 @@ end
 
 % get final time
 tf = round(state.t,2);
+if tf > inp.tf_stop
+    tf = inp.tf_stop;    % max allowed time spent falling
+end
 end
