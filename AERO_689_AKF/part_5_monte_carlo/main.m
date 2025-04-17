@@ -59,10 +59,11 @@ inp.method = '2';   % algorithm 1 or 2
 
 % sim settings
 m = 1000;           % number of runs for monte carlo
+inp.seed = 10;      % random number seed
 inp.ts = 0.01;      % dynamics propagation time step (also EKF propagation)
 
 % plot settings
-n = 50;            % # of runs to plot, as n-->m, runtime increases
+n = 100;            % # of runs to plot, as n-->m, runtime increases
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Monte Carlo Simulation

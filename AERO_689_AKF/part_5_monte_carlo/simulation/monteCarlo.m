@@ -2,11 +2,19 @@ function [sim_data, sample_data] = monteCarlo(inp, m)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Run Monte Carlo Simulations
 
+% set the seed
+rng(inp.seed);
+
 % repeat simulation m times with sampled data each time
 sim_data = cell(m,1);
 
 % find the time until it falls (keeps t_hist same for all runs)
 inp.tf = findTf(inp);
+
+% generate all the initial error vectors
+[V,S] = eig(inp.P0);
+Sigma = sqrtm(S);
+e0 = V*Sigma*randn(8,m);
 
 for i = 1:m
     
@@ -17,12 +25,9 @@ for i = 1:m
     if mod(i,50) == 0
         disp(['Monte Carlo Run #' num2str(i) '...'])
     end
-
-    % change rng seed
-    rng(i);
     
     % sample an initial estimate state vector
-    inp.xh0 = sqrtm(inp.P0)*randn(8,1) + inp.x0;
+    inp.xh0 = e0(:,i) + inp.x0;
     inp.xh0(5:end) = zeros(4,1);
 
     % run the environment / ekf simulation for the sampled vectors
