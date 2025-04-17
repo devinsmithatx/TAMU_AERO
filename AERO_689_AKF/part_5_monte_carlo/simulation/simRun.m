@@ -15,7 +15,7 @@ estimate = initialEstimate(inp, measurement);       % xhat(0)
 % initialize time history data
 state_hist = repmat(state,1,i_max + 1);
 measurement_hist = repmat(measurement,1,int32(i_max/i_measure));
-estimate_hist = repmat(estimate,1,i_max + 1);
+estimate_hist = repmat(estimate,1,int32(i_max/i_measure));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Simulation
@@ -33,8 +33,9 @@ for i = 1:i_max
 
     % store most recent state / measurement / estimate  
         measurement_hist(int32(i/i_measure) + 1) = measurement;
+        estimate_hist(int32(i/i_measure) + 1) = estimate;
     end
     state_hist(i + 1) = state;
-    estimate_hist(i + 1) = estimate;
+    
 end
 end

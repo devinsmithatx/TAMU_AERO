@@ -4,11 +4,11 @@ function plotAllNoise(inp, sim_data, m)
 
 % line settings
 l = 1.5;                    % linewidth
-rgb = [0.2 0.5 0.9 0.2];    % color 1
+rgb = [0.5 0.5 0.5 0.2];    % color 1
 rgb2 = [0.0 0.0 0.0 0.2];   % color 2
 
 % titles and labels
-titles = {"$w_x$", "$w_y$"};
+titles = {"Process Noise - $w_x$", " Process Noise - $w_y$"};
 labels = {"$w$ $(m/s^2)$", "$w$ $(m/s^2)$"};
 
 % loop through each plot and monte carlo sims
@@ -39,10 +39,10 @@ for k = 1:4
             plot(tk_hist, -sqrt(inp.R)*ones(length(tk_hist), 1), 'k-', 'LineWidth', l);
 
             xlim(t_bounds);
-            title("$v_k$", 'Interpreter', 'latex'); 
+            title("Measurement Noise - $v_k$", 'Interpreter', 'latex'); 
             xlabel("$t$ (s)", 'Interpreter', 'latex'); 
             ylabel("$v$ (m)", 'Interpreter', 'latex');
-            legend([S3, S4], '$v$', '$1 \sigma$', 'Interpreter', 'latex', 'Location', 'best');
+            legend([S3, S4], '$v_i$', '$1 \sigma_i$', 'Interpreter', 'latex', 'Location', 'best');
         else
             % PLOT range
             figure(4); 
@@ -53,10 +53,10 @@ for k = 1:4
                  'MarkerEdgeAlpha', rgb(4), 'LineWidth',l); hold on;
 
             xlim(t_bounds);
-            title("$r_k$", 'Interpreter', 'latex'); 
+            title("Measurement - $r_k$", 'Interpreter', 'latex'); 
             xlabel("$t$ (s)", 'Interpreter', 'latex'); 
             ylabel("$r$ (m)", 'Interpreter', 'latex');
-            legend(S5, '$r$', 'Interpreter', 'latex', 'Location', 'best');
+            legend(S5, '$r_i$', 'Interpreter', 'latex', 'Location', 'best');
         end
     end
 end
@@ -76,7 +76,7 @@ function plotFigure(fig_num, t_bounds, th_hist, e_data, s_data, title_text, y_la
     S1 = plot(x,y, 'Color',rgb, 'LineWidth',l); hold on;
 
     % zero line
-    plot(th_hist, zeros(size(th_hist)), 'k--', 'LineWidth', l);
+    plot(th_hist, zeros(size(th_hist)), 'k--', 'LineWidth', 1);
 
     % +1 sigma plot
     y = s_data;
@@ -88,7 +88,7 @@ function plotFigure(fig_num, t_bounds, th_hist, e_data, s_data, title_text, y_la
     
     % graph settings
     xlim(t_bounds);
-    legend([S1, S2], '$e$', '$1 \sigma$', 'Interpreter', ...
+    legend([S1, S2], '$w_i$', '$1 \sigma_i$', 'Interpreter', ...
            'latex', 'Location', 'best');
     title(title_text, 'Interpreter', 'latex');
     xlabel('$t$ (s)', 'Interpreter', 'latex');

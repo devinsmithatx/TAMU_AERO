@@ -5,9 +5,6 @@ function [sim_data, sample_data] = monteCarlo(inp, m)
 % set the seed
 rng(inp.seed);
 
-% repeat simulation m times with sampled data each time
-sim_data = cell(m,1);
-
 % find the time until it falls (keeps t_hist same for all runs)
 inp.tf = findTf(inp);
 
@@ -15,9 +12,17 @@ inp.tf = findTf(inp);
 [V,S] = eig(inp.P0);
 Sigma = sqrtm(S);
 e0 = V*Sigma*randn(8,m);
+M = cov(e0');
 
+% apply transformation such that M = P0;
+[Gamma, D] = eig(M);
+Delta = sqrtm(D);
+R = V*Sigma*(Delta^(-1))*Gamma.';
+e0 = R*e0;
+
+% run monte carlo m times and store data from runs
+sim_data = cell(m,1);
 for i = 1:m
-    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Simulate Run
 
@@ -40,6 +45,7 @@ for i = 1:m
     x_hist = [state_hist.x];
     Q_hist = [state_hist.Q];
     t_hist = [state_hist.t];
+    tk_hist = [measurement_hist.t];
     
     % pull ekf data
     xprior_hist = [estimate_hist.x_prior];
@@ -47,15 +53,27 @@ for i = 1:m
     Pprior_hist = [estimate_hist.P_prior];
     Ppost_hist = [estimate_hist.P_post];
     
+    % get the true states at each measurement
+    xk_hist = zeros(8,length(tk_hist));
+    for j = 1:length(tk_hist)
+        jk = t_hist==tk_hist(j);
+        xk_hist(:,j) = x_hist(:,jk);
+    end
+
     % calculate estimate errors
-    eprior_hist = x_hist - xprior_hist;
-    epost_hist = x_hist - xpost_hist;
+    eprior_hist = xk_hist - xprior_hist;
+    epost_hist = xk_hist - xpost_hist;
 
     % calculate process noise & error covariance standard deviations
     SQ_hist = zeros(8, length(t_hist));
-    SPprior_hist = zeros(8, length(t_hist));
-    SPpost_hist = zeros(8, length(t_hist));
     for j = 0:(length(t_hist)-1)
+        SQ = diag(Q_hist(:,1+j*8:j*8+8)).^.5;
+        SQ_hist(:,j+1) = SQ;
+    end
+
+    SPprior_hist = zeros(8, length(tk_hist));
+    SPpost_hist = zeros(8, length(tk_hist));
+    for j = 0:(length(tk_hist)-1)
         SQ = diag(Q_hist(:,1+j*8:j*8+8)).^.5;
         SPprior = diag(Pprior_hist(:,1+j*8:j*8+8)).^.5;
         SPpost = diag(Ppost_hist(:,1+j*8:j*8+8)).^.5;
@@ -65,19 +83,19 @@ for i = 1:m
     end
     
     % zip together the apriori and aposteriori measurements
-    xh_hist = zeros(8, length(t_hist)*2);
-    e_hist = zeros(8,length(t_hist)*2);
-    th_hist = zeros(1,length(t_hist)*2);
-    SP_hist = zeros(8,length(t_hist)*2);
-    for j = 1:length(t_hist)
+    xh_hist = zeros(8, length(tk_hist)*2);
+    e_hist = zeros(8,length(tk_hist)*2);
+    th_hist = zeros(1,length(tk_hist)*2);
+    SP_hist = zeros(8,length(tk_hist)*2);
+    for j = 1:length(tk_hist)
         xh_hist(:,2*j - 1) = xprior_hist(:,j);
         xh_hist(:,2*j) = xpost_hist(:,j);
         e_hist(:,2*j - 1) = eprior_hist(:,j);
         e_hist(:,2*j) = epost_hist(:,j);
         SP_hist(:,2*j - 1) = SPprior_hist(:,j);
         SP_hist(:,2*j) = SPpost_hist(:,j);
-        th_hist(:,2*j - 1) = t_hist(:,j);
-        th_hist(:,2*j) = t_hist(:,j);
+        th_hist(:,2*j - 1) = tk_hist(:,j);
+        th_hist(:,2*j) = tk_hist(:,j);
     end
 
     % store the raw data and calculated data for the run
@@ -95,7 +113,7 @@ end
 %% Process all Monte Carlo Runs
 
 % calculate the mean error
-e_bar = zeros(8, length(t_hist)*2);
+e_bar = zeros(8, length(th_hist));
 for j = 1:length(th_hist)
     ei = sim_data{1}.e_hist;
     ej_sum = ei(:,j);

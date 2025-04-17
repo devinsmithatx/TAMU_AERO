@@ -4,14 +4,14 @@ function plotAllErrors(sim_data, m)
 
 % line settings
 l = 1.5;                    % linewidth
-rgb = [0.2 0.5 0.9 0.2];    % color 1
+rgb = [0.5 0.5 0.5 0.2];    % color 1
 rgb2 = [0.0 0.0 0.0 0.2];   % color 2
 
 % titles and labels
-titles = {"$r_x$ Error", "$r_y$ Error", ...
-          "$v_x$ Error", "$v_y$ Error", ...
-          "$\Delta h$ Error", "$\Delta \beta$ Error", ...
-          "$\Delta \rho_0$ Error", "$\Delta k_p$ Error"};
+titles = {"Error - $r_x$", "Error - $r_y$", ...
+          "Error - $v_x$", "Error - $v_y$", ...
+          "Error - $\Delta h$", "Error - $\Delta \beta$", ...
+          "Error - $\Delta \rho_0$", "Error - $\Delta k_p$"};
     
 labels = {"$r$ (m)", "$r$ (m)", "$v$ (m/s)", "$v$ (m/s)", ...
           "$h$ (m)", "$\beta$", "$\rho$ $(kg/m^3)$", "$k_p$ (m)"};
@@ -47,7 +47,7 @@ function plotFigure(fig_num, t_bounds, th_hist, e_data, s_data, title_text, y_la
     S1 = plot(x,y,'Color',rgb, 'LineWidth',l); hold on;
 
     % zero line
-    plot(th_hist, zeros(size(th_hist)), 'k--', 'LineWidth', l);
+    plot(th_hist, zeros(size(th_hist)), 'k--', 'LineWidth', 1);
 
     % +1 sigma plot
     y = s_data;
@@ -59,7 +59,7 @@ function plotFigure(fig_num, t_bounds, th_hist, e_data, s_data, title_text, y_la
 
     % graph settings
     xlim(t_bounds);
-    legend([S1, S2], '$e$', '$1 \sigma$', 'Interpreter', 'latex', 'Location', 'best');
+    legend([S1, S2], '$e_i$', '$\sqrt{P_{ii}}$', 'Interpreter', 'latex', 'Location', 'best');
     title(title_text, 'Interpreter', 'latex');
     xlabel('$t$ (s)', 'Interpreter', 'latex');
     ylabel(y_label, 'Interpreter', 'latex');

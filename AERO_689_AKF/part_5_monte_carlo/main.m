@@ -1,4 +1,4 @@
-%% EXTENDED KALMAN FILTER PROJECT, PART 4: MONTE CARLO SIMULATION
+%% EXTENDED KALMAN FILTER PROJECT, PART 5: MONTE CARLO SIMULATION
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set Up Workspace
@@ -59,7 +59,7 @@ inp.method = '2';   % algorithm 1 or 2
 
 % sim settings
 m = 1000;           % number of runs for monte carlo
-inp.seed = 10;      % random number seed
+inp.seed = 10;      % random number generator seed
 inp.ts = 0.01;      % dynamics propagation time step (also EKF propagation)
 
 % plot settings

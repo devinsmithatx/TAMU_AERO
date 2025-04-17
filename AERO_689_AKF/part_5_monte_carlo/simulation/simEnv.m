@@ -18,7 +18,8 @@ dQ = F*Q + Q*F.' + inp.Qs;
 Q = dQ.*inp.ts + Q;
 
 % sample process noise
-w = [zeros(2,1); sqrtm(Q(3:4, 3:4))*randn(2,1); zeros(4,1)]; 
+[V, S] = eig(Q);
+w = V*S.^(0.5)*randn(8,1);
 
 % propigate the dynamics
 dx = xDynamics(inp, x, w);

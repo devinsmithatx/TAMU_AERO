@@ -4,14 +4,14 @@ function plotAllStates(sim_data, m)
 
 % line settings
 l = 1.5;                    % linewidth
-rgb = [0.2 0.5 0.9 0.2];    % color 1
+rgb = [0.5 0.5 0.5 0.2];    % color 1
 rgb2 = [0.0 0.0 0.0 0.2];   % color 2
 
 % titles and labels
-titles = {"$r_x$", "$r_y$", ...
-          "$v_x$", "$v_y$", ...
-          "$\Delta h$", "$\Delta \beta$", ...
-          "$\Delta \rho_0$", "$\Delta k_p$"};
+titles = {"State - $r_x$", "State - $r_y$", ...
+          "State - $v_x$", "State - $v_y$", ...
+          "State - $\Delta h$", "State - $\Delta \beta$", ...
+          "State - $\Delta \rho_0$", "State - $\Delta k_p$"};
 
 labels = {"$r$ (m)", "$r$ (m)", "$v$ (m/s)", "$v$ (m/s)", ...
           "$h$ (m)", "$\beta$", "$\rho$ $(kg/m^3)$", "$k_p$ (m)"};
@@ -41,9 +41,9 @@ for k = 1:8
 
         S2 = plot(x,y,'Color',rgb, 'LineWidth',l); hold on;
 
-        legend([S1, S2], '$x$', '$\hat{x}$', 'Interpreter', 'latex', 'Location', 'best');
+        legend([S1, S2], '$x_i$', '$\hat{x}_i$', 'Interpreter', 'latex', 'Location', 'best');
         ylim([0 inf])
-        title("Trajectory", 'Interpreter', 'latex');
+        title("Object Trajectory", 'Interpreter', 'latex');
         xlabel("$x$ (m)", 'Interpreter', 'latex');
         ylabel("$y$ (m)", 'Interpreter', 'latex');
     else
@@ -76,6 +76,6 @@ function plotFigure(fig_num, t_bounds, t_hist, th_hist, x_true, x_est, title_tex
     xlabel('$t$ (s)', 'Interpreter', 'latex');
     ylabel(y_label, 'Interpreter', 'latex');
     title(title_text, 'Interpreter', 'latex');
-    legend([S1, S2], '$x$', '$\hat{x}$', 'Interpreter', 'latex', 'Location', 'best');
+    legend([S1, S2], '$x_i$', '$\hat{x}_i$', 'Interpreter', 'latex', 'Location', 'best');
 end
 
