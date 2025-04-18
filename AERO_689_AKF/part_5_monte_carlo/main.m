@@ -59,8 +59,8 @@ inp.P0 = diag([10 1000 5 10 0.04 225 0.015 846400]);    % Error P0
 m = 1000;                       % number of monte carlo runs
 n = 1000;                        % number of monte carlo runs to plot
 inp.seed = 10;                  % random number generator seed
-inp.tf_stop = 25;               % stop a run when t   <= tf_stop 
-inp.ry_stop = 0;                % stop a run when r_y <= ry_stop
+inp.tf_stop = 21.2;             % stop a run when t   <= tf_stop 
+inp.ry_stop = 10;               % stop a run when r_y <= ry_stop
 
 % Integration Settings
 inp.ts = 0.01;                  % sim integartion time step
@@ -76,9 +76,10 @@ inp.algorithm = 1;              % EKF algorithm 1 or 2
 %% Plotting Data
 
 % % plot nominal EKF run vs mean error & sampled error covariance
-plotSampledEKF(sim_data, sample_data);
+% plotSampledEKF(sim_data, sample_data);
 
-% plot all sim data from first 'n' runs
-plotAllNoise(sim_data, n);
-plotAllErrors(sim_data, n);
-plotAllStates(sim_data, n);
+% % plot all sim data from first 'n' runs
+% plotAllNoise(sim_data, n);
+% plotAllErrors(sim_data, n);
+% plotAllStates(sim_data, n);
+plotAllGains(sim_data,n);
