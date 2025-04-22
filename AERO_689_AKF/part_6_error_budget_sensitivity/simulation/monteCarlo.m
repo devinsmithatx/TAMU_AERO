@@ -28,6 +28,7 @@ Delta = sqrtm(D);
 R = V*Sigma*(Delta^(-1))*Gamma.';
 w0 = R*e0;
 
+% use the given estimation error for a single nominal run
 if m == 1
     xh0 = [97.9; 1037.4; -0.24; -3.50; 0; 0; 0; 0];
     w0 = xh0 - inp.x0;

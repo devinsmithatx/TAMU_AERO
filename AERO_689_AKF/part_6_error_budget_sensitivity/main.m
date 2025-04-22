@@ -82,10 +82,10 @@ close all;
 plotSampledEKF(sim_data, sample_data);
 
 % Monte Carlo - plot all sim data from first 'n' runs
-plotAllNoise(sim_data, n);
-plotAllErrors(sim_data, n);
+% plotAllNoise(sim_data, n);
+% plotAllErrors(sim_data, n);
 plotAllGains(sim_data,n);
-plotAllStates(sim_data, n);
+% plotAllStates(sim_data, n);
 
 % % Error Budget - gains vs time
 % plotAllGains(sim_data,1);
