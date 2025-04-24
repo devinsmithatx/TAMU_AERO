@@ -86,9 +86,12 @@ w = sin(10*T);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plots
 
-% plot the poles, zeros, step response, and frequency plots
+% plot the poles, zeros, step/impulse response, and frequency plots
 plot_results(P_nominal, P_uncertain, CL1_nominal, CL1_uncertain, gamma1);
 plot_results(P_nominal, P_nominal, CL2_nominal, CL2_nominal, gamma2);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Plots for sinusoidal disturbance
 
 % plot the response for the sinusoidal w(t) for Hinf
 figure; 

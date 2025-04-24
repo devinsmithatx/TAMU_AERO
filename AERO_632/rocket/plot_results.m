@@ -22,6 +22,12 @@ step(CL); hold on;
 set(findall(gcf,'type','line'),'linewidth',1.5);
 legend()
 
+% impulse Response
+figure; 
+impulse(CL); hold on; 
+set(findall(gcf,'type','line'),'linewidth',1.5);
+legend()
+
 % Singular Values
 figure; 
 sigma(CL, gamma);
